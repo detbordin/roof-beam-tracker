@@ -44,8 +44,9 @@ main{flex:1;min-height:0;position:relative}
 .hs.t{background:rgba(245,158,11,.60);border-color:#b45309}
 .hs.p{background:rgba(22,163,74,.62);border-color:#166534}
 .hs.w{background:rgba(139,92,246,.62);border-color:#5b21b6}
+.hs.u{background:rgba(236,72,153,.55);border-color:#9d174d}
 .hs.dim{opacity:.18}
-.ovw .hs:not(.t):not(.p):not(.w){background:transparent;border-width:1px;border-color:rgba(37,99,235,.22)}
+.ovw .hs:not(.t):not(.p):not(.w):not(.u){background:transparent;border-width:1px;border-color:rgba(37,99,235,.22)}
 .hs.nt::after{content:"";position:absolute;right:-5px;top:-5px;width:11px;height:11px;border-radius:50%;background:#e11d48;border:2px solid #fff}
 .hs.sel{outline:3px solid #dc2626;outline-offset:1px;z-index:3}
 .hs.pick{outline:3px dashed #111;outline-offset:1px;z-index:3}
@@ -57,6 +58,7 @@ main{flex:1;min-height:0;position:relative}
 .chip.t{background:#fef3c7;border-color:var(--tie)}
 .chip.p{background:#dcfce7;border-color:var(--pour)}
 .chip.w{background:#ede9fe;border-color:#8b5cf6}
+.chip.u{background:#fce7f3;border-color:#ec4899}
 .chip.pick{border-color:#111;box-shadow:0 0 0 2px #111}
 .chip .note{color:#9f1239;font-size:11.5px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .empty{padding:30px;text-align:center;color:var(--mut)}
@@ -68,6 +70,9 @@ main{flex:1;min-height:0;position:relative}
 .row.on.t{border-color:var(--tie);background:#fffbeb}
 .row.on.p{border-color:var(--pour);background:#f0fdf4}
 .row.on.w{border-color:#8b5cf6;background:#f5f3ff}
+.row.on.u{border-color:#ec4899;background:#fdf2f8}
+.row.u input[type=checkbox]{accent-color:#ec4899}
+.day .bs button.u{border-color:#ec4899;background:#fce7f3}
 .row.w input[type=checkbox]{accent-color:#8b5cf6}
 .day{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:10px}
 .day h3{margin:0 0 2px;font-size:16px}
@@ -102,12 +107,12 @@ main{flex:1;min-height:0;position:relative}
 .rp th{background:#e3e7ee}
 .rp thead{display:table-header-group}
 .rp tr{page-break-inside:avoid;break-inside:avoid}
-.rp tr.p td.st{background:#bbf7d0}.rp tr.t td.st{background:#fde68a}.rp tr.w td.st{background:#ddd6fe}
+.rp tr.p td.st{background:#bbf7d0}.rp tr.t td.st{background:#fde68a}.rp tr.w td.st{background:#ddd6fe}.rp tr.u td.st{background:#fbcfe8}
 .rp .lgn{display:flex;gap:6mm;margin:3mm 0 4mm;font-size:10pt}
 .rp .lgn i{display:inline-block;width:4mm;height:4mm;margin-right:1.5mm;vertical-align:-0.8mm;border:1px solid #666}
 .rp .plan{margin:0 auto;width:232mm}
 .rp .plan .hs{cursor:default}
-.rp .plan .hs:not(.t):not(.p):not(.w){background:transparent;border-color:transparent}
+.rp .plan .hs:not(.t):not(.p):not(.w):not(.u){background:transparent;border-color:transparent}
 .rp .plan .hs{border-width:1px}
 .rp .big td{font-size:11pt}
 @media print{
@@ -145,7 +150,7 @@ var SIZE={PB5:[0.2,0.5],PB5C:[0.2,0.5]};
 function vol(b){var z=SIZE[b.t]||[0.2,0.4];return z[0]*z[1]*b.l}
 var MN=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
 function fmt(iso){if(!iso)return'';var p=iso.split('-');return (+p[2])+' '+MN[+p[1]-1]+' '+String((+p[0]+543)%100)}
-function st(id){var s=STATE[id]||{};return s.p?'p':(s.w?'w':(s.t?'t':'n'))}
+function st(id){var s=STATE[id]||{};return s.p?'p':(s.w?'w':(s.t?'t':(s.u?'u':'n')))}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 
 // ---------- persistence (localStorage) ----------
@@ -207,25 +212,25 @@ function sheetXML(rows,widths,filterRef){
   x+='</sheetData>'+(filterRef?'<autoFilter ref="'+filterRef+'"/>':'')+'</worksheet>';
   return x;
 }
-var STY='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><numFmts count="1"><numFmt numFmtId="164" formatCode="dd/mm/yyyy"/></numFmts><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts><fills count="6"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFD9DEE8"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFC6EFCE"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFFFE699"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFE4DFEC"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="7"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/><xf numFmtId="164" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="2" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="0" fontId="0" fillId="3" borderId="0" xfId="0" applyFill="1"/><xf numFmtId="0" fontId="0" fillId="4" borderId="0" xfId="0" applyFill="1"/><xf numFmtId="0" fontId="0" fillId="5" borderId="0" xfId="0" applyFill="1"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
+var STY='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><numFmts count="1"><numFmt numFmtId="164" formatCode="dd/mm/yyyy"/></numFmts><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts><fills count="7"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFD9DEE8"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFC6EFCE"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFFFE699"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFE4DFEC"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFF9C9E1"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="8"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/><xf numFmtId="164" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="2" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="0" fontId="0" fillId="3" borderId="0" xfId="0" applyFill="1"/><xf numFmtId="0" fontId="0" fillId="4" borderId="0" xfId="0" applyFill="1"/><xf numFmtId="0" fontId="0" fillId="5" borderId="0" xfId="0" applyFill="1"/><xf numFmtId="0" fontId="0" fillId="6" borderId="0" xfId="0" applyFill="1"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
 var SECN={A:'ช่วงที่ 1 (A–F)',B:'ช่วงที่ 2 (F–K)',C:'ช่วงที่ 3 (K–Q)'};
 function exportXLSX(){
   var H=function(a){return a.map(function(x){return cS(x,1)})};
-  var r1=[H(['เบอร์คาน','ชนิด','ยาว (ม.)','Top','ดีเทล','แผ่น','ช่วงแปลน','สถานะ','วันที่ผูกเหล็ก','วันที่วางแผนหล่อ','วันที่หล่อ','หมายเหตุ'])];
+  var r1=[H(['เบอร์คาน','ชนิด','ยาว (ม.)','Top','ดีเทล','แผ่น','ช่วงแปลน','สถานะ','วันที่วางแผนผูกเหล็ก','วันที่ผูกเหล็ก','วันที่วางแผนหล่อ','วันที่หล่อ','หมายเหตุ'])];
   BEAMS.forEach(function(b){
     var s=STATE[b.id]||{},k=st(b.id);
-    var sty=k==='p'?4:k==='w'?6:k==='t'?5:0;
-    r1.push([cS(b.id),cS(b.t),cN(b.l,3),cS(b.top),cS(b.d||''),cS(b.s||''),cS(SECN[b.hot.p]),cS(k==='p'?'หล่อแล้ว':k==='w'?'วางแผนหล่อ':k==='t'?'ผูกเหล็กแล้ว':'ยังไม่ทำ',sty),s.t?cD(s.t):null,s.w?cD(s.w):null,s.p?cD(s.p):null,cS(s.n||'')]);
+    var sty=k==='p'?4:k==='w'?6:k==='t'?5:k==='u'?7:0;
+    r1.push([cS(b.id),cS(b.t),cN(b.l,3),cS(b.top),cS(b.d||''),cS(b.s||''),cS(SECN[b.hot.p]),cS(k==='p'?'หล่อแล้ว':k==='w'?'วางแผนหล่อ':k==='t'?'ผูกเหล็กแล้ว':k==='u'?'วางแผนผูกเหล็ก':'ยังไม่ทำ',sty),s.u?cD(s.u):null,s.t?cD(s.t):null,s.w?cD(s.w):null,s.p?cD(s.p):null,cS(s.n||'')]);
   });
-  var r2=[H(['ช่วงแปลน','ทั้งหมด (ตัว)','ผูกเหล็กแล้ว (รวมที่หล่อแล้ว)','วางแผนหล่อ (ยังไม่หล่อ)','หล่อแล้ว','ยังไม่ทำ'])];
-  var tot=[0,0,0,0,0];
+  var r2=[H(['ช่วงแปลน','ทั้งหมด (ตัว)','ผูกเหล็กแล้ว (รวมที่หล่อแล้ว)','วางแผนผูกเหล็ก (ยังไม่ผูก)','วางแผนหล่อ (ยังไม่หล่อ)','หล่อแล้ว','ยังไม่ทำ'])];
+  var tot=[0,0,0,0,0,0];
   ['A','B','C'].forEach(function(k){
-    var n=0,tt=0,w=0,p=0,z=0;
-    BEAMS.forEach(function(b){if(b.hot.p!==k)return;n++;var s=STATE[b.id]||{};if(s.t||s.p)tt++;if(s.w&&!s.p)w++;if(s.p)p++;if(!s.t&&!s.p&&!s.w)z++});
-    tot[0]+=n;tot[1]+=tt;tot[2]+=w;tot[3]+=p;tot[4]+=z;
-    r2.push([cS(SECN[k]),cN(n),cN(tt),cN(w),cN(p),cN(z)]);
+    var n=0,tt=0,w=0,p=0,z=0,u=0;
+    BEAMS.forEach(function(b){if(b.hot.p!==k)return;n++;var s=STATE[b.id]||{};if(s.t||s.p)tt++;if(s.w&&!s.p)w++;if(s.p)p++;if(!s.t&&!s.p&&!s.w)z++;if(s.u&&!s.t&&!s.p)u++});
+    tot[0]+=n;tot[1]+=tt;tot[2]+=u;tot[3]+=w;tot[4]+=p;tot[5]+=z;
+    r2.push([cS(SECN[k]),cN(n),cN(tt),cN(u),cN(w),cN(p),cN(z)]);
   });
-  r2.push([cS('รวม',1),cN(tot[0]),cN(tot[1]),cN(tot[2]),cN(tot[3]),cN(tot[4])]);
+  r2.push([cS('รวม',1),cN(tot[0]),cN(tot[1]),cN(tot[2]),cN(tot[3]),cN(tot[4]),cN(tot[5])]);
   r2.push([]);
   r2.push(H(['วันที่','รายการ','จำนวน (ตัว)','ยาวรวม (ม.)','คอนกรีตโดยประมาณ (ลบ.ม.)','เบอร์คาน']));
   var rows=[];
@@ -233,10 +238,11 @@ function exportXLSX(){
   BEAMS.forEach(function(b){var s=STATE[b.id]||{};
     if(s.p){var k='1|'+s.p;(g[k]=g[k]||{d:s.p,l:'หล่อแล้ว',a:[]}).a.push(b)}
     else if(s.w){var k2='2|'+s.w;(g[k2]=g[k2]||{d:s.w,l:'วางแผนหล่อ',a:[]}).a.push(b)}
+    if(s.u&&!s.t&&!s.p){var k3='3|'+s.u;(g[k3]=g[k3]||{d:s.u,l:'วางแผนผูกเหล็ก',a:[]}).a.push(b)}
   });
   Object.keys(g).map(function(k){return g[k]}).sort(function(a,b){return a.d<b.d?-1:a.d>b.d?1:(a.l<b.l?-1:1)}).forEach(function(x){
     var L=0,V=0;x.a.forEach(function(b){L+=b.l;V+=vol(b)});
-    r2.push([cD(x.d),cS(x.l,x.l==='หล่อแล้ว'?4:6),cN(x.a.length),cN(Math.round(L*1000)/1000,3),cN(Math.round(V*100)/100,3),cS(x.a.map(function(b){return b.id}).join(', '))]);
+    r2.push([cD(x.d),cS(x.l,x.l==='หล่อแล้ว'?4:x.l==='วางแผนผูกเหล็ก'?7:6),cN(x.a.length),cN(Math.round(L*1000)/1000,3),x.l==='วางแผนผูกเหล็ก'?null:cN(Math.round(V*100)/100,3),cS(x.a.map(function(b){return b.id}).join(', '))]);
   });
   var files=[
     {name:'[Content_Types].xml',text:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>'},
@@ -244,7 +250,7 @@ function exportXLSX(){
     {name:'xl/workbook.xml',text:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="สถานะคาน" sheetId="1" r:id="rId1"/><sheet name="สรุป" sheetId="2" r:id="rId2"/></sheets></workbook>'},
     {name:'xl/_rels/workbook.xml.rels',text:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet2.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'},
     {name:'xl/styles.xml',text:STY},
-    {name:'xl/worksheets/sheet1.xml',text:sheetXML(r1,[11,8,10,10,9,9,16,15,15,18,13,40],'A1:L'+r1.length)},
+    {name:'xl/worksheets/sheet1.xml',text:sheetXML(r1,[11,8,10,10,9,9,16,16,20,15,18,13,40],'A1:M'+r1.length)},
     {name:'xl/worksheets/sheet2.xml',text:sheetXML(r2,[18,16,26,24,26,60],null)}
   ];
   dl('roof-beam-status-'+todayISO()+'.xlsx','',zipBlob(files));
@@ -262,22 +268,23 @@ function rpPlan(src,pick){
 }
 function buildReport(){
   var c=counts(null);
-  var LG='<div class="lgn"><span><i style="background:rgba(22,163,74,.62)"></i>หล่อแล้ว</span><span><i style="background:rgba(139,92,246,.62)"></i>วางแผนหล่อ</span><span><i style="background:rgba(245,158,11,.60)"></i>ผูกเหล็กแล้ว</span><span><i style="background:#fff"></i>ยังไม่ทำ</span><span><i style="background:#e11d48;border-radius:50%"></i>มีหมายเหตุ</span></div>';
+  var LG='<div class="lgn"><span><i style="background:rgba(22,163,74,.62)"></i>หล่อแล้ว</span><span><i style="background:rgba(139,92,246,.62)"></i>วางแผนหล่อ</span><span><i style="background:rgba(245,158,11,.60)"></i>ผูกเหล็กแล้ว</span><span><i style="background:rgba(236,72,153,.55)"></i>วางแผนผูกเหล็ก</span><span><i style="background:#fff"></i>ยังไม่ทำ</span><span><i style="background:#e11d48;border-radius:50%"></i>มีหมายเหตุ</span></div>';
   var h='<div class="rp-page"><h1>รายงานความคืบหน้างานคานหลังคา PB</h1><div class="sub">อาคารพาณิชย์ คสล. 2 ชั้น · ข้อมูล ณ วันที่ '+fmt(todayISO())+'</div>';
-  h+='<table class="big" style="max-width:190mm"><thead><tr><th>ช่วงแปลน</th><th>ทั้งหมด</th><th>ผูกเหล็กแล้ว (รวมหล่อแล้ว)</th><th>วางแผนหล่อ (ยังไม่หล่อ)</th><th>หล่อแล้ว</th><th>ยังไม่ทำ</th></tr></thead><tbody>';
-  var T=[0,0,0,0,0];
+  h+='<table class="big" style="max-width:190mm"><thead><tr><th>ช่วงแปลน</th><th>ทั้งหมด</th><th>ผูกเหล็กแล้ว (รวมหล่อแล้ว)</th><th>วางแผนผูกเหล็ก (ยังไม่ผูก)</th><th>วางแผนหล่อ (ยังไม่หล่อ)</th><th>หล่อแล้ว</th><th>ยังไม่ทำ</th></tr></thead><tbody>';
+  var T=[0,0,0,0,0,0];
   ['A','B','C'].forEach(function(k){
-    var n=0,tt=0,w=0,p=0,z=0;
-    BEAMS.forEach(function(b){if(b.hot.p!==k)return;n++;var s=STATE[b.id]||{};if(s.t||s.p)tt++;if(s.w&&!s.p)w++;if(s.p)p++;if(!s.t&&!s.p&&!s.w)z++});
-    T[0]+=n;T[1]+=tt;T[2]+=w;T[3]+=p;T[4]+=z;
-    h+='<tr><td>'+SECN[k]+'</td><td>'+n+'</td><td>'+tt+'</td><td>'+w+'</td><td>'+p+'</td><td>'+z+'</td></tr>';
+    var n=0,tt=0,w=0,p=0,z=0,u=0;
+    BEAMS.forEach(function(b){if(b.hot.p!==k)return;n++;var s=STATE[b.id]||{};if(s.t||s.p)tt++;if(s.w&&!s.p)w++;if(s.p)p++;if(!s.t&&!s.p&&!s.w)z++;if(s.u&&!s.t&&!s.p)u++});
+    T[0]+=n;T[1]+=tt;T[2]+=u;T[3]+=w;T[4]+=p;T[5]+=z;
+    h+='<tr><td>'+SECN[k]+'</td><td>'+n+'</td><td>'+tt+'</td><td>'+u+'</td><td>'+w+'</td><td>'+p+'</td><td>'+z+'</td></tr>';
   });
-  h+='<tr><th>รวม</th><th>'+T[0]+'</th><th>'+T[1]+'</th><th>'+T[2]+'</th><th>'+T[3]+'</th><th>'+T[4]+'</th></tr></tbody></table>';
+  h+='<tr><th>รวม</th><th>'+T[0]+'</th><th>'+T[1]+'</th><th>'+T[2]+'</th><th>'+T[3]+'</th><th>'+T[4]+'</th><th>'+T[5]+'</th></tr></tbody></table>';
   // by date
   var g={};
   BEAMS.forEach(function(b){var s=STATE[b.id]||{};
     if(s.p){var k='1|'+s.p;(g[k]=g[k]||{d:s.p,l:'หล่อแล้ว',a:[]}).a.push(b)}
     else if(s.w){var k2='2|'+s.w;(g[k2]=g[k2]||{d:s.w,l:'วางแผนหล่อ',a:[]}).a.push(b)}
+    if(s.u&&!s.t&&!s.p){var k3='3|'+s.u;(g[k3]=g[k3]||{d:s.u,l:'วางแผนผูกเหล็ก',a:[]}).a.push(b)}
   });
   var gs=Object.keys(g).map(function(k){return g[k]}).sort(function(a,b){return a.d<b.d?-1:a.d>b.d?1:(a.l<b.l?-1:1)});
   h+='<h2 style="margin-top:8mm">สรุปตามวันที่หล่อ / วางแผนหล่อ</h2>';
@@ -285,7 +292,7 @@ function buildReport(){
   else{
     h+='<table><thead><tr><th>วันที่</th><th>รายการ</th><th>ตัว</th><th>ยาวรวม (ม.)</th><th>คอนกรีตโดยประมาณ (ลบ.ม.)</th><th>เบอร์คาน</th></tr></thead><tbody>';
     gs.forEach(function(x){var L=0,V=0;x.a.forEach(function(b){L+=b.l;V+=vol(b)});
-      h+='<tr class="'+(x.l==='หล่อแล้ว'?'p':'w')+'"><td>'+fmt(x.d)+'</td><td class="st">'+x.l+'</td><td>'+x.a.length+'</td><td>'+L.toFixed(2)+'</td><td>'+V.toFixed(2)+'</td><td>'+x.a.map(function(b){return b.id}).join(', ')+'</td></tr>'});
+      h+='<tr class="'+(x.l==='หล่อแล้ว'?'p':x.l==='วางแผนผูกเหล็ก'?'u':'w')+'"><td>'+fmt(x.d)+'</td><td class="st">'+x.l+'</td><td>'+x.a.length+'</td><td>'+L.toFixed(2)+'</td><td>'+V.toFixed(2)+'</td><td>'+x.a.map(function(b){return b.id}).join(', ')+'</td></tr>'});
     h+='</tbody></table>';
   }
   h+='</div>';
@@ -293,10 +300,10 @@ function buildReport(){
   ['A','B','C'].forEach(function(k){
     h+='<div class="rp-page"><h2>'+SECN[k]+'</h2>'+LG+rpPlan(SECS[k].img,function(b){return b.hot.p===k?b.hot:null})+'</div>';
   });
-  h+='<div class="rp-page"><h2>รายการคานทั้งหมด ('+BEAMS.length+' ตัว)</h2><table><thead><tr><th>เบอร์</th><th>ชนิด</th><th>ยาว (ม.)</th><th>Top</th><th>สถานะ</th><th>ผูกเหล็ก</th><th>วางแผนหล่อ</th><th>หล่อ</th><th>หมายเหตุ</th></tr></thead><tbody>';
+  h+='<div class="rp-page"><h2>รายการคานทั้งหมด ('+BEAMS.length+' ตัว)</h2><table><thead><tr><th>เบอร์</th><th>ชนิด</th><th>ยาว (ม.)</th><th>Top</th><th>สถานะ</th><th>วางแผนผูก</th><th>ผูกเหล็ก</th><th>วางแผนหล่อ</th><th>หล่อ</th><th>หมายเหตุ</th></tr></thead><tbody>';
   BEAMS.forEach(function(b){
     var s=STATE[b.id]||{},k=st(b.id);
-    h+='<tr class="'+k+'"><td>'+b.id+'</td><td>'+b.t+'</td><td>'+b.l+'</td><td>'+b.top+'</td><td class="st">'+(k==='p'?'หล่อแล้ว':k==='w'?'วางแผนหล่อ':k==='t'?'ผูกเหล็กแล้ว':'ยังไม่ทำ')+'</td><td>'+(s.t?fmt(s.t):'')+'</td><td>'+(s.w?fmt(s.w):'')+'</td><td>'+(s.p?fmt(s.p):'')+'</td><td>'+esc(s.n||'')+'</td></tr>';
+    h+='<tr class="'+k+'"><td>'+b.id+'</td><td>'+b.t+'</td><td>'+b.l+'</td><td>'+b.top+'</td><td class="st">'+(k==='p'?'หล่อแล้ว':k==='w'?'วางแผนหล่อ':k==='t'?'ผูกเหล็กแล้ว':k==='u'?'วางแผนผูกเหล็ก':'ยังไม่ทำ')+'</td><td>'+(s.u?fmt(s.u):'')+'</td><td>'+(s.t?fmt(s.t):'')+'</td><td>'+(s.w?fmt(s.w):'')+'</td><td>'+(s.p?fmt(s.p):'')+'</td><td>'+esc(s.n||'')+'</td></tr>';
   });
   h+='</tbody></table></div>';
   return h;
@@ -314,7 +321,7 @@ function importData(file){
 }
 
 // ---------- logic ----------
-function clean(id){var s=STATE[id];if(s&&!s.t&&!s.p&&!s.w&&!s.n)delete STATE[id]}
+function clean(id){var s=STATE[id];if(s&&!s.t&&!s.p&&!s.w&&!s.u&&!s.n)delete STATE[id]}
 function setField(ids,field,on,date){
   ids.forEach(function(id){
     var s=STATE[id]||(STATE[id]={});
@@ -326,9 +333,9 @@ function setField(ids,field,on,date){
 }
 function setNote(id,txt){var s=STATE[id]||(STATE[id]={});txt=txt.replace(/\s+$/,'');if(txt)s.n=txt;else delete s.n;clean(id);changed()}
 function counts(sec){
-  var n=0,t=0,p=0,w=0;
-  BEAMS.forEach(function(b){if(sec&&b.hot.p!==sec)return;n++;var s=STATE[b.id]||{};if(s.p)p++;else{if(s.t)t++;if(s.w)w++}});
-  return{n:n,t:t,p:p,w:w};
+  var n=0,t=0,p=0,w=0,u=0;
+  BEAMS.forEach(function(b){if(sec&&b.hot.p!==sec)return;n++;var s=STATE[b.id]||{};if(s.p)p++;else{if(s.t)t++;else if(s.u)u++;if(s.w)w++}});
+  return{n:n,t:t,p:p,w:w,u:u};
 }
 function fActive(){return F.status!=='all'||F.type!=='all'||F.from||F.to||F.note}
 function match(b){
@@ -346,11 +353,12 @@ function paintHeader(){
   var c=counts(null);
   el.innerHTML='<h1><span>ติดตามงานคานหลังคา PB</span><span class="save">'+esc(saveMsg)+'</span></h1>'+
   '<div class="sum"><span class="pill">ทั้งหมด '+c.n+' ตัว</span>'+
+  '<span class="pill"><i style="background:#ec4899"></i>วางแผนผูกเหล็ก '+c.u+'</span>'+
   '<span class="pill"><i style="background:var(--tie)"></i>ผูกเหล็กแล้ว '+(c.t+c.p)+'</span>'+
   '<span class="pill"><i style="background:var(--pour)"></i>หล่อแล้ว '+c.p+'</span>'+
   '<span class="pill"><i style="background:#8b5cf6"></i>วางแผนหล่อ '+c.w+'</span>'+
   '<span class="pill"><i style="background:#9db4e8"></i>ยังไม่ทำ '+(c.n-c.t-c.p)+'</span></div>'+
-  '<div class="bar"><b style="background:var(--pour);width:'+(c.p/c.n*100)+'%"></b><b style="background:var(--tie);width:'+(c.t/c.n*100)+'%"></b></div><div class="ver">เวอร์ชัน 6 · ส่งออก Excel/PDF</div>';
+  '<div class="bar"><b style="background:var(--pour);width:'+(c.p/c.n*100)+'%"></b><b style="background:var(--tie);width:'+(c.t/c.n*100)+'%"></b></div><div class="ver">เวอร์ชัน 7 · มีแผนผูกเหล็ก</div>';
 }
 function paintNav(){
   var nv=document.getElementById('nav');
@@ -374,7 +382,7 @@ function paintTools(){
   if(view!=='plan')h+='<button data-multi class="'+(multi?'on':'')+'">เลือกหลายตัว</button>';
   h+='<button data-exp>สำรอง</button><button data-imp>นำเข้า</button><button data-xlsx>Excel</button><button data-pdf>PDF</button><input type="file" id="impf" accept=".json,application/json" hidden>';
   T.innerHTML=h;
-  var lg=document.getElementById('lg');if(lg)lg.innerHTML=(view==='all'||SECS[view])?'<span class="pill"><i style="background:var(--pour)"></i>หล่อแล้ว</span><span class="pill"><i style="background:#8b5cf6"></i>วางแผนหล่อ</span><span class="pill"><i style="background:var(--tie)"></i>ผูกเหล็กแล้ว</span><span class="pill"><i style="background:#9db4e8"></i>ยังไม่ทำ</span>':'';
+  var lg=document.getElementById('lg');if(lg)lg.innerHTML=(view==='all'||SECS[view])?'<span class="pill"><i style="background:var(--pour)"></i>หล่อแล้ว</span><span class="pill"><i style="background:#8b5cf6"></i>วางแผนหล่อ</span><span class="pill"><i style="background:var(--tie)"></i>ผูกเหล็กแล้ว</span><span class="pill"><i style="background:#ec4899"></i>วางแผนผูกเหล็ก</span><span class="pill"><i style="background:#9db4e8"></i>ยังไม่ทำ</span>':'';
   T.querySelectorAll('[data-z]').forEach(function(b){b.onclick=function(){var z=b.dataset.z;var sc=document.querySelector('.scroller');var cx=sc?(sc.scrollLeft+sc.clientWidth/2)/sc.scrollWidth:0,cy=sc?(sc.scrollTop+sc.clientHeight/2)/sc.scrollHeight:0;if(z==='-')zoom=Math.max(1,zoom/1.4);else if(z==='+')zoom=Math.min(6,zoom*1.4);else zoom=1;var p=document.querySelector('.plan');if(p)p.style.width=(zoom*100)+'%';if(sc){sc.scrollLeft=cx*sc.scrollWidth-sc.clientWidth/2;sc.scrollTop=cy*sc.scrollHeight-sc.clientHeight/2}}});
   T.querySelector('[data-filter]').onclick=function(){showF=!showF;paintTools();paintFilter()};
   var m=T.querySelector('[data-multi]');if(m)m.onclick=function(){multi=!multi;picks={};sel=null;paintTools();paintMain();paintPanel()};
@@ -386,17 +394,17 @@ function paintTools(){
 }
 function dateChips(){
   var map={};BEAMS.forEach(function(b){var d=(STATE[b.id]||{})[F.kind];if(d)map[d]=(map[d]||0)+1});
-  var ks=Object.keys(map).sort();if(F.kind!=='w')ks.reverse();return ks.map(function(d){return[d,map[d]]});
+  var ks=Object.keys(map).sort();if(F.kind!=='w'&&F.kind!=='u')ks.reverse();return ks.map(function(d){return[d,map[d]]});
 }
 function paintFilter(){
   var el=document.getElementById('fp');
   if(!showF){el.innerHTML='';return}
   var types=['all'];BEAMS.forEach(function(b){if(types.indexOf(b.t)<0)types.push(b.t)});
   var h='<div class="fp"><div class="r"><span class="lb">สถานะ</span>';
-  [['all','ทั้งหมด'],['n','ยังไม่ทำ'],['t','ผูกเหล็กแล้ว'],['w','วางแผนหล่อ'],['p','หล่อแล้ว']].forEach(function(f){h+='<button class="c'+(F.status===f[0]?' on':'')+'" data-s="'+f[0]+'">'+f[1]+'</button>'});
+  [['all','ทั้งหมด'],['n','ยังไม่ทำ'],['u','วางแผนผูกเหล็ก'],['t','ผูกเหล็กแล้ว'],['w','วางแผนหล่อ'],['p','หล่อแล้ว']].forEach(function(f){h+='<button class="c'+(F.status===f[0]?' on':'')+'" data-s="'+f[0]+'">'+f[1]+'</button>'});
   h+='</div><div class="r"><span class="lb">ชนิด</span>';
   types.forEach(function(t){h+='<button class="c'+(F.type===t?' on':'')+'" data-t="'+t+'">'+(t==='all'?'ทุกชนิด':t)+'</button>'});
-  h+='</div><div class="r"><span class="lb">วันที่</span><button class="c'+(F.kind==='p'?' on':'')+'" data-k="p">วันที่หล่อ</button><button class="c'+(F.kind==='w'?' on':'')+'" data-k="w">วันที่วางแผนหล่อ</button><button class="c'+(F.kind==='t'?' on':'')+'" data-k="t">วันที่ผูกเหล็ก</button></div>';
+  h+='</div><div class="r"><span class="lb">วันที่</span><button class="c'+(F.kind==='p'?' on':'')+'" data-k="p">วันที่หล่อ</button><button class="c'+(F.kind==='w'?' on':'')+'" data-k="w">วันที่วางแผนหล่อ</button><button class="c'+(F.kind==='u'?' on':'')+'" data-k="u">วันที่วางแผนผูกเหล็ก</button><button class="c'+(F.kind==='t'?' on':'')+'" data-k="t">วันที่ผูกเหล็ก</button></div>';
   h+='<div class="r"><span class="lb">ช่วง</span><input type="date" id="ff" value="'+F.from+'"> – <input type="date" id="ft" value="'+F.to+'"><button class="c" data-today>วันนี้</button><button class="c" data-tmr>พรุ่งนี้</button></div>';
   var dc=dateChips();
   if(dc.length){h+='<div class="r"><span class="lb">วันที่มี</span>';dc.forEach(function(x){h+='<button class="c'+((F.from===x[0]&&F.to===x[0])?' on':'')+'" data-d="'+x[0]+'">'+fmt(x[0])+' ('+x[1]+')</button>'});h+='</div>'}
@@ -444,7 +452,7 @@ function paintMain(){
     BEAMS.forEach(function(b){
       if(!match(b))return;cnt++;
       var k=st(b.id),s=STATE[b.id]||{};
-      h+='<button class="chip '+(k==='n'?'':k)+(picks[b.id]?' pick':'')+'" data-id="'+b.id+'"><b>'+b.id+'</b><small>'+b.t+' · '+b.l+' ม.</small><small>'+(s.p?'หล่อ '+fmt(s.p):s.w?'แผนหล่อ '+fmt(s.w):s.t?'ผูก '+fmt(s.t):'—')+'</small>'+(s.n?'<span class="note">'+esc(s.n)+'</span>':'')+'</button>';
+      h+='<button class="chip '+(k==='n'?'':k)+(picks[b.id]?' pick':'')+'" data-id="'+b.id+'"><b>'+b.id+'</b><small>'+b.t+' · '+b.l+' ม.</small><small>'+(s.p?'หล่อ '+fmt(s.p):s.w?'แผนหล่อ '+fmt(s.w):s.t?'ผูก '+fmt(s.t):s.u?'แผนผูก '+fmt(s.u):'—')+'</small>'+(s.n?'<span class="note">'+esc(s.n)+'</span>':'')+'</button>';
     });
     m.innerHTML=h+'</div>'+(cnt?'':'<div class="empty">ไม่มีคานตรงเงื่อนไข</div>')+'</div>';
   }
@@ -455,16 +463,24 @@ function paintMain(){
 function refreshAll(){paintHeader();paintNav();paintTools();paintFilter();paintMain();paintPanel()}
 function dayLabel(d){var t=todayISO();if(d===t)return'วันนี้';if(d===tomorrowISO())return'พรุ่งนี้';if(d<t)return'เลยกำหนด';return''}
 function planHTML(){
-  var g={},ready=[];
-  BEAMS.forEach(function(b){var s=STATE[b.id]||{};if(s.w){(g[s.w]=g[s.w]||[]).push(b)}else if(s.t&&!s.p)ready.push(b)});
+  var g={},gu={},ready=[];
+  BEAMS.forEach(function(b){var s=STATE[b.id]||{};if(s.w){(g[s.w]=g[s.w]||[]).push(b)}else if(s.t&&!s.p)ready.push(b);if(s.u&&!s.t&&!s.p)(gu[s.u]=gu[s.u]||[]).push(b)});
   var ds=Object.keys(g).sort(),h='<div class="list">';
-  h+='<div class="hint">วิธีวางแผน: ไปที่แท็บช่วงที่ 1–3 หรือรายการทั้งหมด → กด "เลือกหลายตัว" → แตะคานที่จะหล่อ → เลือกวันที่ แล้วกด "วางแผนหล่อ"</div>';
+  h+='<div class="hint">วิธีวางแผน: ไปที่แท็บช่วงที่ 1–3 หรือรายการทั้งหมด → กด "เลือกหลายตัว" → แตะคานที่จะผูกเหล็กหรือจะหล่อ → เลือกวันที่ แล้วกด "วางแผนผูกเหล็ก" หรือ "วางแผนหล่อ"</div>';
   if(!ds.length)h+='<div class="empty">ยังไม่มีคานที่วางแผนหล่อ</div>';
   ds.forEach(function(d){
     var arr=g[d],L=0,V=0,done=0;arr.forEach(function(b){L+=b.l;V+=vol(b);if((STATE[b.id]||{}).p)done++});
     var lb=dayLabel(d);
     h+='<div class="day"><h3>'+(lb?lb+' · ':'')+fmt(d)+'</h3><div class="sub">'+arr.length+' ตัว · ยาวรวม '+L.toFixed(2)+' ม. · คอนกรีตโดยประมาณ '+V.toFixed(2)+' ลบ.ม.'+(done?' · หล่อแล้ว '+done:'')+'</div><div class="bs">';
     arr.forEach(function(b){h+='<button data-id="'+b.id+'" class="'+(st(b.id)==='p'?'p':'')+'">'+b.id+' <small>'+b.t+'</small></button>'});
+    h+='</div></div>';
+  });
+  var dus=Object.keys(gu).sort();
+  if(dus.length)h+='<h3 style="margin:10px 2px 6px;font-size:15px">แผนผูกเหล็ก</h3>';
+  dus.forEach(function(d){
+    var arr=gu[d],L=0;arr.forEach(function(b){L+=b.l});var lb=dayLabel(d);
+    h+='<div class="day"><h3>'+(lb?lb+' · ':'')+fmt(d)+'</h3><div class="sub">'+arr.length+' ตัว · ยาวรวม '+L.toFixed(2)+' ม.</div><div class="bs">';
+    arr.forEach(function(b){h+='<button data-id="'+b.id+'" class="u">'+b.id+' <small>'+b.t+'</small></button>'});
     h+='</div></div>';
   });
   if(ready.length){
@@ -478,7 +494,7 @@ function planHTML(){
 }
 function spot(b,q){
   var k=st(b.id),s=STATE[b.id]||{},act=fActive();
-  return '<button class="hs '+(k==='n'?'':k)+(s.n?' nt':'')+(act&&!match(b)?' dim':'')+(sel===b.id?' sel':'')+(picks[b.id]?' pick':'')+'" data-id="'+b.id+'" style="left:'+q.x+'%;top:'+q.y+'%;width:'+q.w+'%;height:'+q.h+'%" title="'+b.id+' '+b.t+(s.p?' หล่อ '+fmt(s.p):s.w?' แผนหล่อ '+fmt(s.w):s.t?' ผูก '+fmt(s.t):'')+(s.n?' — '+esc(s.n):'')+'"></button>';
+  return '<button class="hs '+(k==='n'?'':k)+(s.n?' nt':'')+(act&&!match(b)?' dim':'')+(sel===b.id?' sel':'')+(picks[b.id]?' pick':'')+'" data-id="'+b.id+'" style="left:'+q.x+'%;top:'+q.y+'%;width:'+q.w+'%;height:'+q.h+'%" title="'+b.id+' '+b.t+(s.p?' หล่อ '+fmt(s.p):s.w?' แผนหล่อ '+fmt(s.w):s.t?' ผูก '+fmt(s.t):s.u?' แผนผูก '+fmt(s.u):'')+(s.n?' — '+esc(s.n):'')+'"></button>';
 }
 function pickBeam(id){
   if(multi){if(picks[id])delete picks[id];else picks[id]=1;paintMain();paintPanel();return}
@@ -492,15 +508,16 @@ function paintPanel(){
     if(!ids.length){P.innerHTML='<div class="hint">โหมดเลือกหลายตัว: แตะคานที่ต้องการ แล้วกดบันทึกสถานะทีเดียว</div>';return}
     P.innerHTML='<div class="bulk"><div class="b1">เลือกแล้ว '+ids.length+' ตัว: '+esc(ids.join(', '))+'</div>'+
     '<input type="date" id="bd" value="'+todayISO()+'"><button class="q" id="q0">วันนี้</button><button class="q" id="q1">พรุ่งนี้</button>'+
-    '<button id="bt" style="background:var(--tie)">ผูกเหล็กแล้ว</button><button id="bw" style="background:#8b5cf6">วางแผนหล่อ</button><button id="bp" style="background:var(--pour)">หล่อแล้ว</button>'+
+    '<button id="bu" style="background:#ec4899">วางแผนผูกเหล็ก</button><button id="bt" style="background:var(--tie)">ผูกเหล็กแล้ว</button><button id="bw" style="background:#8b5cf6">วางแผนหล่อ</button><button id="bp" style="background:var(--pour)">หล่อแล้ว</button>'+
     '<button id="bc" style="background:#e11d48">ล้างสถานะ</button><button id="bx" style="background:#6b7385">ยกเลิก</button></div>';
     var d=function(){return document.getElementById('bd').value||todayISO()};
     document.getElementById('q0').onclick=function(){document.getElementById('bd').value=todayISO()};
     document.getElementById('q1').onclick=function(){document.getElementById('bd').value=tomorrowISO()};
     document.getElementById('bt').onclick=function(){setField(ids,'t',true,d());picks={};refreshAll()};
+    document.getElementById('bu').onclick=function(){setField(ids,'u',true,d());picks={};refreshAll()};
     document.getElementById('bw').onclick=function(){setField(ids,'w',true,d());picks={};refreshAll()};
     document.getElementById('bp').onclick=function(){setField(ids,'p',true,d());picks={};refreshAll()};
-    document.getElementById('bc').onclick=function(){if(!confirm('ล้างสถานะผูกเหล็ก/แผนหล่อ/หล่อของ '+ids.length+' ตัว?'))return;setField(ids,'t',false);setField(ids,'w',false);setField(ids,'p',false);picks={};refreshAll()};
+    document.getElementById('bc').onclick=function(){if(!confirm('ล้างสถานะแผนผูก/ผูกเหล็ก/แผนหล่อ/หล่อของ '+ids.length+' ตัว?'))return;setField(ids,'t',false);setField(ids,'u',false);setField(ids,'w',false);setField(ids,'p',false);picks={};refreshAll()};
     document.getElementById('bx').onclick=function(){picks={};paintMain();paintPanel()};
     return;
   }
@@ -508,6 +525,7 @@ function paintPanel(){
   var b=BYID[sel],s=STATE[sel]||{};
   P.innerHTML='<div class="sheet"><h2><span>คาน '+b.id+' · '+b.t+'</span><button class="x" id="cl">✕</button></h2>'+
   '<div class="meta">ยาว '+b.l+' ม. · Top '+b.top+(b.d?' · ดีเทล '+b.d+' ('+b.s+')':'')+'</div>'+
+  '<div class="row u'+(s.u?' on':'')+'"><label><input type="checkbox" id="cu"'+(s.u?' checked':'')+'>วางแผนผูกเหล็ก</label><input type="date" id="du" value="'+(s.u||tomorrowISO())+'"></div>'+
   '<div class="row t'+(s.t?' on':'')+'"><label><input type="checkbox" id="ct"'+(s.t?' checked':'')+'>ผูกเหล็กแล้ว</label><input type="date" id="dt" value="'+(s.t||todayISO())+'"></div>'+
   '<div class="row w'+(s.w?' on':'')+'"><label><input type="checkbox" id="cw"'+(s.w?' checked':'')+'>วางแผนหล่อ</label><input type="date" id="dw" value="'+(s.w||tomorrowISO())+'"></div>'+
   '<div class="row p'+(s.p?' on':'')+'"><label><input type="checkbox" id="cp"'+(s.p?' checked':'')+'>หล่อแล้ว</label><input type="date" id="dp" value="'+(s.p||todayISO())+'"></div>'+
@@ -516,6 +534,8 @@ function paintPanel(){
   document.getElementById('cl').onclick=function(){sel=null;paintMain();paintPanel()};
   var refresh=function(){afterEdit();paintPanel()};
   document.getElementById('ct').onchange=function(){setField([cur],'t',this.checked,document.getElementById('dt').value);refresh()};
+  document.getElementById('cu').onchange=function(){setField([cur],'u',this.checked,document.getElementById('du').value);refresh()};
+  document.getElementById('du').onchange=function(){if(document.getElementById('cu').checked){setField([cur],'u',true,this.value);refresh()}};
   document.getElementById('cw').onchange=function(){setField([cur],'w',this.checked,document.getElementById('dw').value);refresh()};
   document.getElementById('dw').onchange=function(){if(document.getElementById('cw').checked){setField([cur],'w',true,this.value);refresh()}};
   document.getElementById('cp').onchange=function(){setField([cur],'p',this.checked,document.getElementById('dp').value);refresh()};
