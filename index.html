@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ติดตามงานคานหลังคา PB</title>
+<meta name="theme-color" content="#1d2433">
+<style>
+:root{--bg:#f4f5f7;--card:#fff;--ink:#1d2433;--mut:#6b7385;--line:#dde1e8;--tie:#f59e0b;--pour:#16a34a;--acc:#2563eb}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:"Sarabun","Noto Sans Thai",system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:15px}
+#app{display:flex;flex-direction:column;height:100vh;height:100dvh}
+header{background:var(--card);border-bottom:1px solid var(--line);padding:8px 12px;flex:none}
+h1{font-size:17px;margin:0 0 6px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.save{font-size:12px;font-weight:400;color:var(--mut)}
+.sum{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:13px}
+.pill{padding:2px 9px;border-radius:99px;border:1px solid var(--line);background:#fff;white-space:nowrap}
+.pill i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.bar{height:8px;border-radius:6px;background:#e7eaf0;overflow:hidden;display:flex;margin-top:6px}
+.bar b{display:block;height:100%}
+nav{display:flex;gap:4px;padding:6px 8px;background:var(--card);border-bottom:1px solid var(--line);overflow-x:auto;flex:none}
+nav button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 12px;font:inherit;white-space:nowrap;cursor:pointer;color:var(--ink)}
+nav button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+nav .cnt{font-size:11px;opacity:.8;margin-left:4px}
+.tools{display:flex;gap:6px;align-items:center;padding:6px 8px;flex:none;flex-wrap:wrap;font-size:13px}
+.tools button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:5px 10px;font:inherit;cursor:pointer;color:var(--ink)}
+.tools button.on{background:#1d2433;color:#fff;border-color:#1d2433}
+.tools .sp{flex:1}
+main{flex:1;min-height:0;position:relative}
+.scroller{position:absolute;inset:0;overflow:auto;background:#cfd3db;-webkit-overflow-scrolling:touch}
+.plan{position:relative;line-height:0}
+.plan img{width:100%;display:block;user-select:none;-webkit-user-drag:none}
+.hs{position:absolute;border:2px solid rgba(37,99,235,.7);background:rgba(37,99,235,.10);border-radius:3px;cursor:pointer;padding:0}
+.hs.t{background:rgba(245,158,11,.60);border-color:#b45309}
+.hs.p{background:rgba(22,163,74,.62);border-color:#166534}
+.hs.sel{outline:3px solid #dc2626;outline-offset:1px;z-index:3}
+.hs.pick{outline:3px solid #7c3aed;outline-offset:1px;z-index:3}
+.list{position:absolute;inset:0;overflow:auto;padding:8px}
+.fl{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.fl button{border:1px solid var(--line);background:#fff;border-radius:99px;padding:4px 11px;font:inherit;font-size:13px;cursor:pointer;color:var(--ink)}
+.fl button.on{background:#1d2433;color:#fff;border-color:#1d2433}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px}
+.chip{background:#fff;border:2px solid var(--line);border-radius:10px;padding:6px 8px;cursor:pointer;text-align:left;font:inherit;color:var(--ink);line-height:1.25}
+.chip b{font-size:16px;display:block}
+.chip small{color:var(--mut);display:block;font-size:11.5px}
+.chip.t{background:#fef3c7;border-color:var(--tie)}
+.chip.p{background:#dcfce7;border-color:var(--pour)}
+.chip.pick{border-color:#7c3aed;box-shadow:0 0 0 2px #7c3aed}
+.sheet{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);box-shadow:0 -6px 24px rgba(0,0,0,.18);padding:12px 14px 16px;z-index:20;border-radius:14px 14px 0 0;max-width:560px;margin:0 auto}
+.sheet h2{margin:0;font-size:19px;display:flex;justify-content:space-between;align-items:center}
+.sheet .meta{color:var(--mut);font-size:13px;margin:2px 0 10px}
+.x{border:0;background:#eef0f4;border-radius:8px;width:34px;height:34px;font-size:18px;cursor:pointer}
+.row{display:flex;align-items:center;gap:10px;padding:10px;border:2px solid var(--line);border-radius:12px;margin-bottom:8px}
+.row.on.t{border-color:var(--tie);background:#fffbeb}
+.row.on.p{border-color:var(--pour);background:#f0fdf4}
+.row label{display:flex;align-items:center;gap:10px;flex:1;font-size:16px;font-weight:600;cursor:pointer}
+.row input[type=checkbox]{width:26px;height:26px;accent-color:var(--pour)}
+.row.t input[type=checkbox]{accent-color:var(--tie)}
+.row input[type=date]{font:inherit;padding:5px 6px;border:1px solid var(--line);border-radius:8px;min-width:0}
+.bulk{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:2px solid #7c3aed;padding:10px 12px 14px;z-index:20;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.bulk .b1{flex:1 1 100%;font-weight:700}
+.bulk button{border:0;border-radius:9px;padding:9px 12px;font:inherit;font-weight:600;cursor:pointer;color:#fff}
+.bulk input[type=date]{font:inherit;padding:6px;border:1px solid var(--line);border-radius:8px}
+.hint{padding:6px 10px;font-size:12.5px;color:var(--mut)}
+</style>
+</head>
+<body>
+<script type="application/json" id="beamData">[{"id":"A1","t":"PB2","l":4.65,"top":"+8.200","d":"D25","s":"ST-07","hot":{"p":"A","x":30.826,"y":22.324,"w":3.437,"h":1.939,"v":0}},{"id":"A2","t":"PB2","l":4.55,"top":"+8.200","d":"D26","s":"ST-07","hot":{"p":"A","x":42.846,"y":22.324,"w":3.432,"h":1.939,"v":0}},{"id":"A3","t":"PB2","l":4.55,"top":"+8.200","d":"D26","s":"ST-07","hot":{"p":"A","x":54.746,"y":22.324,"w":3.437,"h":1.939,"v":0}},{"id":"A4","t":"PB2","l":4.45,"top":"+8.200","d":"D27","s":"ST-07","hot":{"p":"A","x":66.529,"y":22.324,"w":3.432,"h":1.939,"v":0}},{"id":"A5","t":"PB1","l":4.75,"top":"+8.200","d":"D04","s":"ST-06","hot":{"p":"A","x":30.947,"y":39.498,"w":3.432,"h":1.939,"v":0}},{"id":"A6","t":"PB1","l":4.75,"top":"+8.200","d":"D02","s":"ST-06","hot":{"p":"A","x":42.846,"y":39.498,"w":3.432,"h":1.939,"v":0}},{"id":"A7","t":"PB1","l":4.75,"top":"+8.200","d":"D02","s":"ST-06","hot":{"p":"A","x":54.746,"y":39.498,"w":3.437,"h":1.939,"v":0}},{"id":"A8","t":"PB1","l":4.75,"top":"+8.200","d":"D03","s":"ST-06","hot":{"p":"A","x":66.645,"y":39.498,"w":3.437,"h":1.939,"v":0}},{"id":"A9","t":"PB1","l":3.75,"top":"+8.200","d":"D07","s":"ST-06","hot":{"p":"A","x":20.237,"y":53.642,"w":3.432,"h":1.931,"v":0}},{"id":"A10","t":"PB1","l":4.75,"top":"+8.200","d":"D02","s":"ST-06","hot":{"p":"A","x":30.947,"y":53.642,"w":3.432,"h":1.931,"v":0}},{"id":"A11","t":"PB1","l":4.75,"top":"+8.200","d":"D02","s":"ST-06","hot":{"p":"A","x":42.846,"y":53.642,"w":3.432,"h":1.931,"v":0}},{"id":"A12","t":"PB1","l":4.75,"top":"+8.200","d":"D02","s":"ST-06","hot":{"p":"A","x":54.746,"y":53.642,"w":3.437,"h":1.931,"v":0}},{"id":"A13","t":"PB1","l":4.75,"top":"+8.200","d":"D03","s":"ST-06","hot":{"p":"A","x":66.645,"y":53.642,"w":3.437,"h":1.931,"v":0}},{"id":"A14","t":"PB1","l":3.75,"top":"+8.200","d":"D07","s":"ST-06","hot":{"p":"A","x":20.237,"y":70.139,"w":5.959,"h":2.854,"v":0}},{"id":"A15","t":"PB2","l":4.75,"top":"+8.200","d":"D21","s":"ST-07","hot":{"p":"A","x":30.947,"y":67.11,"w":3.432,"h":1.931,"v":0}},{"id":"A16","t":"PB2","l":4.75,"top":"+8.200","d":"D21","s":"ST-07","hot":{"p":"A","x":42.846,"y":67.11,"w":3.432,"h":1.931,"v":0}},{"id":"A17","t":"PB2","l":4.75,"top":"+8.200","d":"","s":"","hot":{"p":"A","x":54.746,"y":67.11,"w":3.437,"h":1.931,"v":0}},{"id":"A18","t":"PB2","l":4.75,"top":"+8.200","d":"","s":"","hot":{"p":"A","x":66.645,"y":67.11,"w":3.437,"h":1.931,"v":0}},{"id":"A19","t":"PB2","l":1.775,"top":"+8.200","d":"D34","s":"ST-08","hot":{"p":"A","x":17.718,"y":73.502,"w":3.578,"h":1.939,"v":0}},{"id":"A20","t":"PB2","l":1.75,"top":"+8.200","d":"D35","s":"ST-08","hot":{"p":"A","x":22.615,"y":76.538,"w":3.437,"h":1.931,"v":0}},{"id":"A21","t":"PB2","l":4.75,"top":"+8.200","d":"D21","s":"ST-07","hot":{"p":"A","x":30.947,"y":73.502,"w":3.432,"h":1.939,"v":0}},{"id":"A22","t":"PB2","l":4.75,"top":"+8.200","d":"D21","s":"ST-07","hot":{"p":"A","x":42.846,"y":73.502,"w":3.432,"h":1.939,"v":0}},{"id":"A23","t":"PB2","l":4.75,"top":"+8.200","d":"D21","s":"ST-07","hot":{"p":"A","x":54.746,"y":73.502,"w":3.437,"h":1.939,"v":0}},{"id":"A24","t":"PB2","l":4.75,"top":"+8.200","d":"D22","s":"ST-07","hot":{"p":"A","x":66.645,"y":73.502,"w":3.437,"h":1.939,"v":0}},{"id":"A25","t":"PB2","l":4.75,"top":"+8.200","d":"D24","s":"ST-07","hot":{"p":"A","x":24.829,"y":30.506,"w":1.37,"h":4.862,"v":1}},{"id":"A26","t":"PB1","l":4.75,"top":"+8.200","d":"D05","s":"ST-06","hot":{"p":"A","x":36.728,"y":30.506,"w":1.37,"h":4.862,"v":1}},{"id":"A27","t":"PB1","l":4.75,"top":"+8.200","d":"D05","s":"ST-06","hot":{"p":"A","x":48.627,"y":30.506,"w":1.37,"h":4.862,"v":1}},{"id":"A28","t":"PB1","l":4.75,"top":"+8.200","d":"D05","s":"ST-06","hot":{"p":"A","x":60.526,"y":30.506,"w":1.37,"h":4.862,"v":1}},{"id":"A29","t":"PB1","l":4.75,"top":"+8.900","d":"D05","s":"ST-06","hot":{"p":"A","x":72.431,"y":30.506,"w":1.365,"h":4.862,"v":1}},{"id":"A30","t":"PB2","l":3.75,"top":"+8.200","d":"D29","s":"ST-08","hot":{"p":"A","x":24.829,"y":46.333,"w":1.37,"h":4.862,"v":1}},{"id":"A31","t":"PB1","l":3.75,"top":"+8.200","d":"D08","s":"ST-06","hot":{"p":"A","x":36.728,"y":46.333,"w":1.37,"h":4.862,"v":1}},{"id":"A32","t":"PB1","l":3.75,"top":"+8.200","d":"D08","s":"ST-06","hot":{"p":"A","x":48.627,"y":46.333,"w":1.37,"h":4.862,"v":1}},{"id":"A33","t":"PB1","l":3.75,"top":"+8.200","d":"D08","s":"ST-06","hot":{"p":"A","x":60.526,"y":46.333,"w":1.37,"h":4.862,"v":1}},{"id":"A34","t":"PB1","l":3.75,"top":"+8.900","d":"D08","s":"ST-06","hot":{"p":"A","x":72.431,"y":46.333,"w":1.365,"h":4.862,"v":1}},{"id":"A35","t":"PB4C","l":3.55,"top":"+8.200","d":"","s":"","hot":{"p":"A","x":15.307,"y":60.136,"w":1.37,"h":4.862,"v":1}},{"id":"A36","t":"PB2","l":3.55,"top":"+8.200","d":"D31","s":"ST-08","hot":{"p":"A","x":24.829,"y":60.136,"w":1.37,"h":4.862,"v":1}},{"id":"A37","t":"PB1","l":3.55,"top":"+8.200","d":"D10","s":"ST-06","hot":{"p":"A","x":36.728,"y":60.136,"w":1.37,"h":4.862,"v":1}},{"id":"A38","t":"PB1","l":3.55,"top":"+8.200","d":"D10","s":"ST-06","hot":{"p":"A","x":48.627,"y":60.136,"w":1.37,"h":4.862,"v":1}},{"id":"A39","t":"PB1","l":3.55,"top":"+8.200","d":"D10","s":"ST-06","hot":{"p":"A","x":60.526,"y":60.136,"w":1.37,"h":4.862,"v":1}},{"id":"A40","t":"PB1","l":3.55,"top":"+8.900","d":"D10","s":"ST-06","hot":{"p":"A","x":72.431,"y":60.136,"w":1.365,"h":4.862,"v":1}},{"id":"A41","t":"PB4C","l":1.775,"top":"+8.200","d":"","s":"","hot":{"p":"A","x":15.439,"y":70.875,"w":1.236,"h":4.498,"v":1}},{"id":"A42","t":"PB1","l":1.55,"top":"+8.200","d":"D18","s":"ST-07","hot":{"p":"A","x":24.96,"y":70.54,"w":1.236,"h":4.312,"v":1}},{"id":"A43","t":"PB1","l":1.55,"top":"+8.200","d":"D18","s":"ST-07","hot":{"p":"A","x":36.86,"y":70.54,"w":1.236,"h":4.312,"v":1}},{"id":"A44","t":"PB1","l":1.55,"top":"+8.200","d":"D18","s":"ST-07","hot":{"p":"A","x":48.764,"y":70.54,"w":1.236,"h":4.312,"v":1}},{"id":"A45","t":"PB1","l":1.55,"top":"+8.200","d":"D18","s":"ST-07","hot":{"p":"A","x":60.663,"y":70.54,"w":1.236,"h":4.312,"v":1}},{"id":"A46","t":"PB1","l":1.55,"top":"+8.900","d":"D18","s":"ST-07","hot":{"p":"A","x":74.572,"y":70.24,"w":1.37,"h":4.855,"v":1}},{"id":"B1","t":"PB2","l":4.75,"top":"+8.900","d":"D24","s":"ST-07","hot":{"p":"B","x":20.111,"y":22.324,"w":3.437,"h":1.939,"v":0}},{"id":"B2","t":"PB2","l":1.7,"top":"+8.900","d":"D36","s":"ST-08","hot":{"p":"B","x":28.856,"y":22.324,"w":3.437,"h":1.939,"v":0}},{"id":"B3","t":"PB2","l":4.55,"top":"+8.900","d":"D26","s":"ST-07","hot":{"p":"B","x":43.914,"y":22.324,"w":3.432,"h":1.939,"v":0}},{"id":"B4","t":"PB2","l":4.55,"top":"+8.900","d":"D26","s":"ST-07","hot":{"p":"B","x":55.814,"y":22.324,"w":3.437,"h":1.939,"v":0}},{"id":"B5","t":"PB2","l":4.55,"top":"+8.900","d":"D26","s":"ST-07","hot":{"p":"B","x":67.713,"y":22.324,"w":3.437,"h":1.939,"v":0}},{"id":"B6","t":"PB2","l":4.75,"top":"+8.900","d":"D23","s":"ST-07","hot":{"p":"B","x":20.111,"y":39.498,"w":3.437,"h":1.939,"v":0}},{"id":"B7","t":"PB3","l":4.55,"top":"+8.900","d":"D46","s":"ST-09","hot":{"p":"B","x":32.252,"y":39.498,"w":3.432,"h":1.939,"v":0}},{"id":"B8","t":"PB1","l":4.75,"top":"+8.900","d":"D02","s":"ST-06","hot":{"p":"B","x":43.914,"y":39.498,"w":3.432,"h":1.939,"v":0}},{"id":"B9","t":"PB1","l":4.75,"top":"+8.900","d":"D02","s":"ST-06","hot":{"p":"B","x":55.814,"y":39.498,"w":3.437,"h":1.939,"v":0}},{"id":"B10","t":"PB1","l":4.75,"top":"+8.900","d":"D02","s":"ST-06","hot":{"p":"B","x":67.713,"y":39.498,"w":3.437,"h":1.939,"v":0}},{"id":"B11","t":"PB1","l":2.875,"top":"+8.900","d":"D11","s":"ST-06","hot":{"p":"B","x":22.232,"y":45.897,"w":3.578,"h":1.939,"v":0}},{"id":"B12","t":"PB1","l":1.125,"top":"+8.900","d":"D20","s":"ST-07","hot":{"p":"B","x":28.378,"y":46.276,"w":6.232,"h":1.558,"v":0}},{"id":"B13","t":"PB1","l":1.3,"top":"+8.900","d":"D19","s":"ST-07","hot":{"p":"B","x":31.94,"y":45.326,"w":4.844,"h":2.508,"v":0}},{"id":"B14","t":"PB1","l":1.675,"top":"+8.900","d":"D15","s":"ST-07","hot":{"p":"B","x":16.282,"y":53.27,"w":5.746,"h":2.311,"v":0}},{"id":"B15","t":"PB1","l":1.675,"top":"+8.900","d":"D16","s":"ST-07","hot":{"p":"B","x":35.557,"y":53.642,"w":3.578,"h":1.931,"v":0}},{"id":"B16","t":"PB1","l":4.75,"top":"+8.900","d":"D02","s":"ST-06","hot":{"p":"B","x":43.914,"y":53.642,"w":3.432,"h":1.931,"v":0}},{"id":"B17","t":"PB1","l":4.75,"top":"+8.900","d":"","s":"","hot":{"p":"B","x":55.814,"y":53.642,"w":3.437,"h":1.931,"v":0}},{"id":"B18","t":"PB1","l":4.75,"top":"+8.900","d":"","s":"","hot":{"p":"B","x":67.713,"y":53.642,"w":3.437,"h":1.931,"v":0}},{"id":"B19","t":"PB1","l":1.675,"top":"+8.900","d":"D15","s":"ST-07","hot":{"p":"B","x":16.282,"y":67.072,"w":5.746,"h":1.976,"v":0}},{"id":"B20","t":"PB1","l":1.675,"top":"+8.900","d":"D16","s":"ST-07","hot":{"p":"B","x":35.557,"y":67.11,"w":3.578,"h":1.931,"v":0}},{"id":"B21","t":"PB2","l":4.75,"top":"+8.900","d":"D21","s":"ST-07","hot":{"p":"B","x":43.914,"y":67.11,"w":3.432,"h":1.931,"v":0}},{"id":"B22","t":"PB2","l":4.75,"top":"+8.900","d":"D21","s":"ST-07","hot":{"p":"B","x":55.814,"y":67.11,"w":3.437,"h":1.931,"v":0}},{"id":"B23","t":"PB2","l":4.75,"top":"+8.900","d":"D21","s":"ST-07","hot":{"p":"B","x":67.713,"y":67.11,"w":3.437,"h":1.931,"v":0}},{"id":"B24","t":"PB1","l":1.65,"top":"+8.900","d":"D17","s":"ST-07","hot":{"p":"B","x":16.423,"y":73.502,"w":3.437,"h":1.939,"v":0}},{"id":"B25","t":"PB1","l":1.65,"top":"+8.900","d":"D17","s":"ST-07","hot":{"p":"B","x":35.703,"y":73.231,"w":5.461,"h":2.21,"v":0}},{"id":"B26","t":"PB2","l":4.75,"top":"+8.900","d":"D21","s":"ST-07","hot":{"p":"B","x":43.914,"y":73.502,"w":3.432,"h":1.939,"v":0}},{"id":"B27","t":"PB2","l":4.75,"top":"+8.900","d":"D21","s":"ST-07","hot":{"p":"B","x":55.814,"y":73.502,"w":3.437,"h":1.939,"v":0}},{"id":"B28","t":"PB2","l":4.75,"top":"+8.900","d":"D21","s":"ST-07","hot":{"p":"B","x":67.713,"y":73.502,"w":3.437,"h":1.939,"v":0}},{"id":"B29","t":"PB1","l":4.75,"top":"+8.900","d":"D05","s":"ST-06","hot":{"p":"B","x":25.897,"y":30.506,"w":1.365,"h":4.862,"v":1}},{"id":"B30","t":"PB1","l":4.75,"top":"+8.900","d":"D05","s":"ST-06","hot":{"p":"B","x":28.511,"y":30.506,"w":1.37,"h":4.862,"v":1}},{"id":"B31","t":"PB1","l":4.75,"top":"+8.900","d":"D05","s":"ST-06","hot":{"p":"B","x":49.695,"y":30.506,"w":1.37,"h":4.862,"v":1}},{"id":"B32","t":"PB1","l":4.75,"top":"+8.900","d":"D05","s":"ST-06","hot":{"p":"B","x":61.594,"y":30.506,"w":1.37,"h":4.862,"v":1}},{"id":"B33","t":"PB2A","l":4.75,"top":"+8.900","d":"D38","s":"ST-08","hot":{"p":"B","x":73.499,"y":30.506,"w":1.365,"h":4.862,"v":1}},{"id":"B34","t":"PB1","l":2.75,"top":"+8.900","d":"D12","s":"ST-06","hot":{"p":"B","x":37.796,"y":33.877,"w":1.37,"h":4.855,"v":1}},{"id":"B35","t":"PB2","l":1.675,"top":"+8.900","d":"D37","s":"ST-08","hot":{"p":"B","x":18.516,"y":42.463,"w":1.37,"h":5.062,"v":1}},{"id":"B36","t":"PB3","l":1.675,"top":"+8.900","d":"D48","s":"ST-09","hot":{"p":"B","x":35.413,"y":42.463,"w":1.37,"h":5.062,"v":1}},{"id":"B37","t":"PB5","l":7.75,"top":"+8.900","d":"D53","s":"ST-09","hot":{"p":"B","x":25.897,"y":50.544,"w":1.365,"h":4.855,"v":1}},{"id":"B38","t":"PB5","l":7.75,"top":"+8.900","d":"D53","s":"ST-09","hot":{"p":"B","x":28.378,"y":46.93,"w":1.504,"h":8.469,"v":1}},{"id":"B39","t":"PB2","l":3.75,"top":"+8.900","d":"D29","s":"ST-08","hot":{"p":"B","x":37.796,"y":46.333,"w":1.37,"h":4.862,"v":1}},{"id":"B40","t":"PB1","l":3.75,"top":"+8.900","d":"D08","s":"ST-06","hot":{"p":"B","x":49.695,"y":46.333,"w":1.37,"h":4.862,"v":1}},{"id":"B41","t":"PB1","l":3.75,"top":"+8.900","d":"D08","s":"ST-06","hot":{"p":"B","x":61.594,"y":46.333,"w":1.37,"h":4.862,"v":1}},{"id":"B42","t":"PB2A","l":3.75,"top":"+8.900","d":"D39","s":"ST-08","hot":{"p":"B","x":73.499,"y":46.333,"w":1.365,"h":4.862,"v":1}},{"id":"B43","t":"PB2","l":2.95,"top":"+8.900","d":"D32","s":"ST-08","hot":{"p":"B","x":20.657,"y":50.202,"w":1.37,"h":4.862,"v":1}},{"id":"B44","t":"PB3","l":2.95,"top":"+8.900","d":"D47","s":"ST-09","hot":{"p":"B","x":33.078,"y":46.93,"w":1.564,"h":8.134,"v":1}},{"id":"B45","t":"PB2","l":3.55,"top":"+8.900","d":"D31","s":"ST-08","hot":{"p":"B","x":37.796,"y":60.136,"w":1.37,"h":4.862,"v":1}},{"id":"B46","t":"PB1","l":3.55,"top":"+8.900","d":"D10","s":"ST-06","hot":{"p":"B","x":49.695,"y":60.136,"w":1.37,"h":4.862,"v":1}},{"id":"B47","t":"PB1","l":3.55,"top":"+8.900","d":"D10","s":"ST-06","hot":{"p":"B","x":61.594,"y":60.136,"w":1.37,"h":4.862,"v":1}},{"id":"B48","t":"PB2A","l":3.55,"top":"+8.900","d":"D40","s":"ST-08","hot":{"p":"B","x":73.499,"y":60.136,"w":1.365,"h":4.862,"v":1}},{"id":"B49","t":"PB2","l":4.75,"top":"+8.900","d":"D23","s":"ST-07","hot":{"p":"B","x":20.657,"y":64.012,"w":1.37,"h":4.855,"v":1}},{"id":"B50","t":"PB3","l":4.75,"top":"+8.900","d":"D45","s":"ST-09","hot":{"p":"B","x":33.272,"y":64.012,"w":1.37,"h":4.855,"v":1}},{"id":"B51","t":"PB5C","l":1.775,"top":"+8.900","d":"","s":"","hot":{"p":"B","x":26.028,"y":70.875,"w":1.236,"h":4.498,"v":1}},{"id":"B52","t":"PB5C","l":1.775,"top":"+8.900","d":"","s":"","hot":{"p":"B","x":28.502,"y":70.875,"w":1.236,"h":4.498,"v":1}},{"id":"B53","t":"PB1","l":1.55,"top":"+8.900","d":"D18","s":"ST-07","hot":{"p":"B","x":39.928,"y":70.54,"w":1.236,"h":4.312,"v":1}},{"id":"B54","t":"PB1","l":1.55,"top":"+8.900","d":"D18","s":"ST-07","hot":{"p":"B","x":49.832,"y":70.54,"w":1.231,"h":4.312,"v":1}},{"id":"B55","t":"PB1","l":1.55,"top":"+8.900","d":"D18","s":"ST-07","hot":{"p":"B","x":61.731,"y":70.54,"w":1.236,"h":4.312,"v":1}},{"id":"B56","t":"PB1","l":1.55,"top":"+8.900","d":"D18","s":"ST-07","hot":{"p":"B","x":75.64,"y":70.24,"w":1.37,"h":4.855,"v":1}},{"id":"C1","t":"PB2","l":4.55,"top":"+8.900","d":"D26","s":"ST-07","hot":{"p":"C","x":19.869,"y":22.324,"w":3.437,"h":1.939,"v":0}},{"id":"C2","t":"PB2","l":4.55,"top":"+8.900","d":"D26","s":"ST-07","hot":{"p":"C","x":31.773,"y":22.324,"w":3.432,"h":1.939,"v":0}},{"id":"C3","t":"PB2","l":4.55,"top":"+8.900","d":"D26","s":"ST-07","hot":{"p":"C","x":43.673,"y":22.324,"w":3.437,"h":1.939,"v":0}},{"id":"C4","t":"PB3","l":4.95,"top":"+8.900","d":"D44","s":"ST-09","hot":{"p":"C","x":57.834,"y":22.324,"w":3.437,"h":1.939,"v":0}},{"id":"C5","t":"PB2","l":4.45,"top":"+8.900","d":"D28","s":"ST-07","hot":{"p":"C","x":68.307,"y":22.324,"w":3.437,"h":1.939,"v":0}},{"id":"C6","t":"PB1","l":4.75,"top":"+8.900","d":"D02","s":"ST-06","hot":{"p":"C","x":19.869,"y":39.498,"w":3.437,"h":1.939,"v":0}},{"id":"C7","t":"PB1","l":4.75,"top":"+8.900","d":"D02","s":"ST-06","hot":{"p":"C","x":31.773,"y":39.498,"w":3.432,"h":1.939,"v":0}},{"id":"C8","t":"PB1","l":4.75,"top":"+8.900","d":"D02","s":"ST-06","hot":{"p":"C","x":43.673,"y":39.498,"w":3.437,"h":1.939,"v":0}},{"id":"C9","t":"PB3","l":5.15,"top":"+8.900","d":"D43","s":"ST-09","hot":{"p":"C","x":57.834,"y":39.498,"w":3.437,"h":1.939,"v":0}},{"id":"C10","t":"PB1","l":4.55,"top":"+8.900","d":"D06","s":"ST-06","hot":{"p":"C","x":68.186,"y":39.498,"w":3.437,"h":1.939,"v":0}},{"id":"C11","t":"PB1","l":4.75,"top":"+8.900","d":"D02","s":"ST-06","hot":{"p":"C","x":19.869,"y":53.642,"w":3.437,"h":1.931,"v":0}},{"id":"C12","t":"PB1","l":4.75,"top":"+8.900","d":"D02","s":"ST-06","hot":{"p":"C","x":31.773,"y":53.642,"w":3.432,"h":1.931,"v":0}},{"id":"C13","t":"PB1","l":4.75,"top":"+8.900","d":"D02","s":"ST-06","hot":{"p":"C","x":43.673,"y":53.642,"w":3.437,"h":1.931,"v":0}},{"id":"C14","t":"PB1","l":5.15,"top":"+8.900","d":"D01","s":"ST-06","hot":{"p":"C","x":57.834,"y":53.642,"w":3.437,"h":1.931,"v":0}},{"id":"C15","t":"PB2A","l":1.57,"top":"+8.900","d":"D42","s":"ST-08","hot":{"p":"C","x":64.811,"y":54.164,"w":3.054,"h":1.748,"v":0}},{"id":"C16","t":"PB2A","l":2.73,"top":"+8.900","d":"D41","s":"ST-08","hot":{"p":"C","x":70.353,"y":53.977,"w":3.437,"h":1.939,"v":0}},{"id":"C17","t":"PB2","l":4.75,"top":"+8.900","d":"","s":"","hot":{"p":"C","x":19.869,"y":67.11,"w":3.437,"h":1.931,"v":0}},{"id":"C18","t":"PB2","l":4.75,"top":"+8.900","d":"","s":"","hot":{"p":"C","x":31.773,"y":67.11,"w":3.432,"h":1.931,"v":0}},{"id":"C19","t":"PB2","l":4.75,"top":"+8.900","d":"D21","s":"ST-07","hot":{"p":"C","x":43.673,"y":67.11,"w":3.437,"h":1.931,"v":0}},{"id":"C20","t":"PB1","l":2.15,"top":"+8.900","d":"D14","s":"ST-06","hot":{"p":"C","x":52.479,"y":67.11,"w":3.437,"h":1.931,"v":0}},{"id":"C21","t":"PB1","l":2.45,"top":"+8.900","d":"D13","s":"ST-06","hot":{"p":"C","x":59.023,"y":67.11,"w":3.437,"h":1.931,"v":0}},{"id":"C22","t":"PB2","l":4.75,"top":"+8.900","d":"D21","s":"ST-07","hot":{"p":"C","x":19.869,"y":73.502,"w":3.437,"h":1.939,"v":0}},{"id":"C23","t":"PB2","l":4.75,"top":"+8.900","d":"D21","s":"ST-07","hot":{"p":"C","x":31.773,"y":73.502,"w":3.432,"h":1.939,"v":0}},{"id":"C24","t":"PB2","l":4.75,"top":"+8.900","d":"D21","s":"ST-07","hot":{"p":"C","x":43.673,"y":73.502,"w":3.437,"h":1.939,"v":0}},{"id":"C25","t":"PB2","l":2.35,"top":"+8.900","d":"D33","s":"ST-08","hot":{"p":"C","x":52.715,"y":73.137,"w":6.441,"h":2.304,"v":0}},{"id":"C26","t":"PB1","l":4.75,"top":"+8.900","d":"D05","s":"ST-06","hot":{"p":"C","x":25.655,"y":30.506,"w":1.37,"h":4.862,"v":1}},{"id":"C27","t":"PB1","l":4.75,"top":"+8.900","d":"D05","s":"ST-06","hot":{"p":"C","x":37.554,"y":30.506,"w":1.37,"h":4.862,"v":1}},{"id":"C28","t":"PB2A","l":4.75,"top":"+8.900","d":"D38","s":"ST-08","hot":{"p":"C","x":49.453,"y":30.506,"w":1.37,"h":4.862,"v":1}},{"id":"C29","t":"PB1","l":4.75,"top":"+8.900","d":"D05","s":"ST-06","hot":{"p":"C","x":62.31,"y":30.506,"w":1.365,"h":4.862,"v":1}},{"id":"C30","t":"PB2","l":4.75,"top":"+8.900","d":"D24","s":"ST-07","hot":{"p":"C","x":73.735,"y":30.506,"w":1.365,"h":4.862,"v":1}},{"id":"C31","t":"PB1","l":3.75,"top":"+8.900","d":"D08","s":"ST-06","hot":{"p":"C","x":25.655,"y":46.333,"w":1.37,"h":4.862,"v":1}},{"id":"C32","t":"PB1","l":3.75,"top":"+8.900","d":"D08","s":"ST-06","hot":{"p":"C","x":37.554,"y":46.333,"w":1.37,"h":4.862,"v":1}},{"id":"C33","t":"PB2A","l":3.75,"top":"+8.900","d":"D39","s":"ST-08","hot":{"p":"C","x":49.453,"y":46.333,"w":1.37,"h":4.862,"v":1}},{"id":"C34","t":"PB1","l":3.75,"top":"+8.900","d":"D08","s":"ST-06","hot":{"p":"C","x":62.31,"y":46.333,"w":1.365,"h":4.862,"v":1}},{"id":"C35","t":"PB2","l":3.75,"top":"+8.900","d":"D30","s":"ST-08","hot":{"p":"C","x":73.735,"y":46.333,"w":1.365,"h":4.862,"v":1}},{"id":"C36","t":"PB4C","l":3.775,"top":"+8.900","d":"","s":"","hot":{"p":"C","x":55.408,"y":60.136,"w":1.365,"h":5.062,"v":1}},{"id":"C37","t":"PB1","l":3.55,"top":"+8.900","d":"D10","s":"ST-06","hot":{"p":"C","x":25.655,"y":60.136,"w":1.37,"h":4.862,"v":1}},{"id":"C38","t":"PB1","l":3.55,"top":"+8.900","d":"D10","s":"ST-06","hot":{"p":"C","x":37.554,"y":60.136,"w":1.37,"h":4.862,"v":1}},{"id":"C39","t":"PB2A","l":3.55,"top":"+8.900","d":"D40","s":"ST-08","hot":{"p":"C","x":49.453,"y":60.136,"w":1.37,"h":4.862,"v":1}},{"id":"C40","t":"PB1","l":3.65,"top":"+8.900","d":"D09","s":"ST-06","hot":{"p":"C","x":62.31,"y":60.307,"w":1.365,"h":4.862,"v":1}},{"id":"C41","t":"PB4C","l":1.65,"top":"+8.900","d":"","s":"","hot":{"p":"C","x":57.786,"y":70.069,"w":1.37,"h":4.862,"v":1}},{"id":"C42","t":"PB1","l":1.55,"top":"+8.900","d":"D18","s":"ST-07","hot":{"p":"C","x":25.787,"y":70.54,"w":1.236,"h":4.312,"v":1}},{"id":"C43","t":"PB1","l":1.55,"top":"+8.900","d":"D18","s":"ST-07","hot":{"p":"C","x":37.691,"y":70.54,"w":1.231,"h":4.312,"v":1}},{"id":"C44","t":"PB1","l":1.55,"top":"+8.900","d":"D18","s":"ST-07","hot":{"p":"C","x":49.59,"y":70.54,"w":1.236,"h":4.312,"v":1}}]</script>
+<div id="app"></div>
+<script>
+(function(){
+var BEAMS=JSON.parse(document.getElementById('beamData').textContent);
+var STATE={};
+var LSK='roofbeam-tracker-v1';
+var saveMsg='';
+var SECS={A:{name:'ช่วงที่ 1 (A–F)',img:'plan1.jpg'},B:{name:'ช่วงที่ 2 (F–K)',img:'plan2.jpg'},C:{name:'ช่วงที่ 3 (K–Q)',img:'plan3.jpg'}};
+var view=(location.hash||'#secA').replace('#sec','')||'A';
+if(!SECS[view]&&view!=='list')view='A';
+var zoom=(window.innerWidth<700)?2.2:1.2;
+var sel=null, multi=false, picks={}, flt='all', typeFlt='all';
+var BYID={};BEAMS.forEach(function(b){BYID[b.id]=b});
+var $app=document.getElementById('app');
+function todayISO(){var d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)}
+function fmt(iso){if(!iso)return'';var p=iso.split('-');var m=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];return (+p[2])+' '+m[+p[1]-1]+' '+String((+p[0]+543)%100)}
+function st(id){var s=STATE[id]||{};return s.p?'p':(s.t?'t':'n')}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+
+// ---------- persistence (localStorage) ----------
+try{var raw=localStorage.getItem(LSK);if(raw){var o=JSON.parse(raw);if(o&&o.state)STATE=o.state}}catch(e){}
+function localSave(){try{localStorage.setItem(LSK,JSON.stringify({state:STATE}));saveMsg='บันทึกในเครื่องนี้แล้ว'}catch(e){saveMsg='บันทึกไม่ได้ (เบราว์เซอร์บล็อกที่เก็บข้อมูล)'}}
+function changed(){localSave();paintHeader()}
+function exportData(){
+  var blob=new Blob([JSON.stringify({app:'roof-beam-tracker',saved:new Date().toISOString(),state:STATE},null,1)],{type:'application/json'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='roof-beam-status-'+todayISO()+'.json';document.body.appendChild(a);a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500);
+}
+function importData(file){
+  var r=new FileReader();r.onload=function(){try{var o=JSON.parse(r.result);var s=o.state||o;if(typeof s!=='object')throw 0;
+    if(!confirm('แทนที่ข้อมูลปัจจุบันด้วยไฟล์สำรองนี้?'))return;STATE=s;changed();render()}catch(e){alert('ไฟล์ไม่ถูกต้อง')}};r.readAsText(file);
+}
+// ---------- logic ----------
+function setField(ids,field,on,date){
+  ids.forEach(function(id){
+    var s=STATE[id]||(STATE[id]={});
+    if(on){s[field]=date||todayISO();if(field==='p'&&!s.t)s.t=s.p}
+    else{delete s[field]}
+    if(!s.t&&!s.p)delete STATE[id];
+  });
+  changed();
+}
+function counts(sec){
+  var n=0,t=0,p=0;
+  BEAMS.forEach(function(b){if(sec&&b.hot.p!==sec)return;n++;var k=st(b.id);if(k==='p')p++;if(k==='t')t++});
+  return{n:n,t:t,p:p};
+}
+
+// ---------- render ----------
+function paintHeader(){
+  var el=document.getElementById('hdr');if(!el)return;
+  var c=counts(null);
+  el.innerHTML='<h1><span>ติดตามงานคานหลังคา PB</span><span class="save">'+esc(saveMsg)+'</span></h1>'+
+  '<div class="sum"><span class="pill">ทั้งหมด '+c.n+' ตัว</span>'+
+  '<span class="pill"><i style="background:var(--tie)"></i>ผูกเหล็กแล้ว '+(c.t+c.p)+'</span>'+
+  '<span class="pill"><i style="background:var(--pour)"></i>หล่อแล้ว '+c.p+'</span>'+
+  '<span class="pill"><i style="background:#9db4e8"></i>ยังไม่ทำ '+(c.n-c.t-c.p)+'</span></div>'+
+  '<div class="bar"><b style="background:var(--pour);width:'+(c.p/c.n*100)+'%"></b><b style="background:var(--tie);width:'+(c.t/c.n*100)+'%"></b></div>';
+}
+function render(){
+  var h='<header id="hdr"></header><nav>';
+  Object.keys(SECS).forEach(function(k){var c=counts(k);h+='<button data-v="'+k+'" class="'+(view===k?'on':'')+'">'+SECS[k].name+'<span class="cnt">'+(c.t+c.p)+'/'+c.n+'</span></button>'});
+  h+='<button data-v="list" class="'+(view==='list'?'on':'')+'">รายการทั้งหมด</button></nav>';
+  h+='<div class="tools">';
+  if(view!=='list'){h+='<button data-z="-">−</button><button data-z="+">+</button><button data-z="fit">พอดีจอ</button>'}
+  h+='<span class="sp"></span><button data-exp>สำรอง</button><button data-imp>นำเข้า</button><input type="file" id="impf" accept=".json,application/json" hidden><button data-multi class="'+(multi?'on':'')+'">เลือกหลายตัว</button></div>';
+  h+='<main id="main"></main><div id="panel"></div>';
+  $app.innerHTML=h;
+  paintHeader();paintMain();paintPanel();
+  $app.querySelectorAll('nav [data-v]').forEach(function(b){b.onclick=function(){view=b.dataset.v;location.hash='#sec'+view;sel=null;render()}});
+  $app.querySelectorAll('.tools [data-z]').forEach(function(b){b.onclick=function(){var z=b.dataset.z;var sc=document.querySelector('.scroller');var cx=sc?(sc.scrollLeft+sc.clientWidth/2)/sc.scrollWidth:0,cy=sc?(sc.scrollTop+sc.clientHeight/2)/sc.scrollHeight:0;if(z==='-')zoom=Math.max(1,zoom/1.4);else if(z==='+')zoom=Math.min(6,zoom*1.4);else zoom=1;applyZoom();if(sc){sc.scrollLeft=cx*sc.scrollWidth-sc.clientWidth/2;sc.scrollTop=cy*sc.scrollHeight-sc.clientHeight/2}}});
+  $app.querySelector('[data-exp]').onclick=exportData;
+  $app.querySelector('[data-imp]').onclick=function(){document.getElementById('impf').click()};
+  document.getElementById('impf').onchange=function(){if(this.files[0])importData(this.files[0])};
+  $app.querySelector('[data-multi]').onclick=function(){multi=!multi;picks={};sel=null;render()};
+}
+function applyZoom(){var p=document.querySelector('.plan');if(p)p.style.width=(zoom*100)+'%'}
+function paintMain(){
+  var m=document.getElementById('main');
+  if(view==='list'){
+    var types=['all'];BEAMS.forEach(function(b){if(types.indexOf(b.t)<0)types.push(b.t)});
+    var h='<div class="list"><div class="fl">';
+    [['all','ทั้งหมด'],['n','ยังไม่ทำ'],['t','ผูกเหล็กแล้ว'],['p','หล่อแล้ว']].forEach(function(f){h+='<button data-f="'+f[0]+'" class="'+(flt===f[0]?'on':'')+'">'+f[1]+'</button>'});
+    h+='</div><div class="fl">';
+    types.forEach(function(t){h+='<button data-t="'+t+'" class="'+(typeFlt===t?'on':'')+'">'+(t==='all'?'ทุกชนิด':t)+'</button>'});
+    h+='</div><div class="grid">';
+    BEAMS.forEach(function(b){
+      var k=st(b.id);if(flt!=='all'&&k!==flt)return;if(typeFlt!=='all'&&b.t!==typeFlt)return;
+      var s=STATE[b.id]||{};
+      h+='<button class="chip '+(k==='n'?'':k)+(picks[b.id]?' pick':'')+'" data-id="'+b.id+'"><b>'+b.id+'</b><small>'+b.t+' · '+b.l+' ม.</small><small>'+(s.p?'หล่อ '+fmt(s.p):s.t?'ผูก '+fmt(s.t):'—')+'</small></button>';
+    });
+    h+='</div></div>';
+    m.innerHTML=h;
+    m.querySelectorAll('[data-f]').forEach(function(b){b.onclick=function(){flt=b.dataset.f;paintMain()}});
+    m.querySelectorAll('[data-t]').forEach(function(b){b.onclick=function(){typeFlt=b.dataset.t;paintMain()}});
+    m.querySelectorAll('.chip').forEach(function(b){b.onclick=function(){pickBeam(b.dataset.id)}});
+    return;
+  }
+  var h='<div class="scroller"><div class="plan" style="width:'+(zoom*100)+'%"><img src="'+SECS[view].img+'" alt="แปลนคานหลังคา" draggable="false">';
+  BEAMS.forEach(function(b){
+    if(b.hot.p!==view)return;var k=st(b.id),q=b.hot,s=STATE[b.id]||{};
+    h+='<button class="hs '+(k==='n'?'':k)+(sel===b.id?' sel':'')+(picks[b.id]?' pick':'')+'" data-id="'+b.id+'" style="left:'+q.x+'%;top:'+q.y+'%;width:'+q.w+'%;height:'+q.h+'%" title="'+b.id+' '+b.t+(s.p?' หล่อ '+fmt(s.p):s.t?' ผูก '+fmt(s.t):'')+'"></button>';
+  });
+  h+='</div></div>';
+  m.innerHTML=h;
+  m.querySelectorAll('.hs').forEach(function(b){b.onclick=function(){pickBeam(b.dataset.id)}});
+}
+function pickBeam(id){
+  if(multi){if(picks[id])delete picks[id];else picks[id]=1;paintMain();paintPanel();return}
+  sel=(sel===id)?null:id;paintMain();paintPanel();
+}
+function paintPanel(){
+  var P=document.getElementById('panel');
+  if(multi){
+    var ids=Object.keys(picks);
+    if(!ids.length){P.innerHTML='<div class="hint">โหมดเลือกหลายตัว: แตะคานที่ต้องการ แล้วกดบันทึกสถานะทีเดียว</div>';return}
+    P.innerHTML='<div class="bulk"><div class="b1">เลือกแล้ว '+ids.length+' ตัว: '+esc(ids.join(', '))+'</div>'+
+    '<input type="date" id="bd" value="'+todayISO()+'">'+
+    '<button id="bt" style="background:var(--tie)">ผูกเหล็กแล้ว</button><button id="bp" style="background:var(--pour)">หล่อแล้ว</button>'+
+    '<button id="bc" style="background:#e11d48">ล้างสถานะ</button><button id="bx" style="background:#6b7385">ยกเลิก</button></div>';
+    function d(){return document.getElementById('bd').value||todayISO()}
+    document.getElementById('bt').onclick=function(){setField(ids,'t',true,d());picks={};render()};
+    document.getElementById('bp').onclick=function(){setField(ids,'p',true,d());picks={};render()};
+    document.getElementById('bc').onclick=function(){setField(ids,'t',false);setField(ids,'p',false);picks={};render()};
+    document.getElementById('bx').onclick=function(){picks={};paintMain();paintPanel()};
+    return;
+  }
+  if(!sel){P.innerHTML='';return}
+  var b=BYID[sel],s=STATE[sel]||{};
+  P.innerHTML='<div class="sheet"><h2><span>คาน '+b.id+' · '+b.t+'</span><button class="x" id="cl">✕</button></h2>'+
+  '<div class="meta">ยาว '+b.l+' ม. · Top '+b.top+(b.d?' · ดีเทล '+b.d+' ('+b.s+')':'')+'</div>'+
+  '<div class="row t'+(s.t?' on':'')+'"><label><input type="checkbox" id="ct"'+(s.t?' checked':'')+'>ผูกเหล็กแล้ว</label><input type="date" id="dt" value="'+(s.t||todayISO())+'"></div>'+
+  '<div class="row p'+(s.p?' on':'')+'"><label><input type="checkbox" id="cp"'+(s.p?' checked':'')+'>หล่อแล้ว</label><input type="date" id="dp" value="'+(s.p||todayISO())+'"></div></div>';
+  document.getElementById('cl').onclick=function(){sel=null;paintMain();paintPanel()};
+  function refresh(){paintMain();paintHeader();paintPanel();updateNavCounts()}
+  document.getElementById('ct').onchange=function(){setField([sel],'t',this.checked,document.getElementById('dt').value);refresh()};
+  document.getElementById('cp').onchange=function(){setField([sel],'p',this.checked,document.getElementById('dp').value);refresh()};
+  document.getElementById('dt').onchange=function(){if(document.getElementById('ct').checked){setField([sel],'t',true,this.value);refresh()}};
+  document.getElementById('dp').onchange=function(){if(document.getElementById('cp').checked){setField([sel],'p',true,this.value);refresh()}};
+}
+function updateNavCounts(){
+  $app.querySelectorAll('nav [data-v]').forEach(function(b){var k=b.dataset.v;if(!SECS[k])return;var c=counts(k);b.innerHTML=SECS[k].name+'<span class="cnt">'+(c.t+c.p)+'/'+c.n+'</span>'});
+}
+window.addEventListener('hashchange',function(){var v=(location.hash||'').replace('#sec','');if((SECS[v]||v==='list')&&v!==view){view=v;sel=null;render()}});
+render();
+})();
+</script>
+</body>
+</html>
