@@ -138,7 +138,7 @@ function exportCSV(){
 }
 function importData(file){
   var r=new FileReader();r.onload=function(){try{var o=JSON.parse(r.result);var s=o.state||o;if(typeof s!=='object')throw 0;
-    if(!confirm('แทนที่ข้อมูลปัจจุบันด้วยไฟล์สำรองนี้?'))return;STATE=s;changed();render()}catch(e){alert('ไฟล์ไม่ถูกต้อง')}};r.readAsText(file);
+    if(!confirm('แทนที่ข้อมูลปัจจุบันด้วยไฟล์สำรองนี้?'))return;STATE=s;changed();refreshAll()}catch(e){alert('ไฟล์ไม่ถูกต้อง')}};r.readAsText(file);
 }
 
 // ---------- logic ----------
@@ -178,7 +178,7 @@ function paintHeader(){
   '<span class="pill"><i style="background:var(--pour)"></i>หล่อแล้ว '+c.p+'</span>'+
   '<span class="pill"><i style="background:#8b5cf6"></i>วางแผนหล่อ '+c.w+'</span>'+
   '<span class="pill"><i style="background:#9db4e8"></i>ยังไม่ทำ '+(c.n-c.t-c.p)+'</span></div>'+
-  '<div class="bar"><b style="background:var(--pour);width:'+(c.p/c.n*100)+'%"></b><b style="background:var(--tie);width:'+(c.t/c.n*100)+'%"></b></div><div class="ver">เวอร์ชัน 4 · แปลนรวมกดได้</div>';
+  '<div class="bar"><b style="background:var(--pour);width:'+(c.p/c.n*100)+'%"></b><b style="background:var(--tie);width:'+(c.t/c.n*100)+'%"></b></div><div class="ver">เวอร์ชัน 5 · แก้คลิกแล้วเด้ง</div>';
 }
 function paintNav(){
   var nv=document.getElementById('nav');
@@ -189,6 +189,7 @@ function paintNav(){
   nv.querySelectorAll('[data-v]').forEach(function(b){b.onclick=function(){view=b.dataset.v;location.hash='#sec'+view;sel=null;render()}});
 }
 function render(){
+  lastKey='';
   $app.innerHTML='<header id="hdr"></header><nav id="nav"></nav><div class="tools" id="tools"></div><div class="lgd" id="lg"></div><div id="fp"></div><main id="main"></main><div id="panel"></div>';
   paintHeader();paintNav();paintTools();paintFilter();paintMain();paintPanel();
 }
@@ -242,37 +243,43 @@ function paintFilter(){
   el.querySelector('#fn').onchange=function(){F.note=this.checked;re()};
   el.querySelector('[data-clr]').onclick=function(){F={status:'all',type:'all',kind:F.kind,from:'',to:'',note:false};re()};
 }
+function bindSpots(root){root.querySelectorAll('.hs').forEach(function(b){b.onclick=function(){pickBeam(b.dataset.id)}})}
+var lastKey='';
 function paintMain(){
   var m=document.getElementById('main');
-  if(view==='all'){
-    var h0='<div class="scroller"><div class="plan ovw" style="width:'+(zoom*100)+'%"><img src="plan0.jpg" alt="แปลนคานหลังคารวม" draggable="false">';
-    BEAMS.forEach(function(b){h0+=spot(b,b.ov)});
-    m.innerHTML=h0+'</div></div>';
-    m.querySelectorAll('.hs').forEach(function(b){b.onclick=function(){pickBeam(b.dataset.id)}});
+  var prev=m.querySelector('.scroller,.list');
+  var keep=(lastKey===view&&prev)?{l:prev.scrollLeft,t:prev.scrollTop}:null;
+  if(view==='all'||SECS[view]){
+    var pl=m.querySelector('.plan[data-k="'+view+'"]');
+    var spots='';
+    BEAMS.forEach(function(b){if(view==='all')spots+=spot(b,b.ov);else if(b.hot.p===view)spots+=spot(b,b.hot)});
+    if(pl){
+      // update in place: keep image, zoom and scroll position (no jump)
+      pl.querySelectorAll('.hs').forEach(function(e){e.remove()});
+      pl.insertAdjacentHTML('beforeend',spots);
+      bindSpots(pl);
+      return;
+    }
+    var src=view==='all'?'plan0.jpg':SECS[view].img;
+    m.innerHTML='<div class="scroller"><div class="plan'+(view==='all'?' ovw':'')+'" data-k="'+view+'" style="width:'+(zoom*100)+'%"><img src="'+src+'" alt="แปลนคานหลังคา" draggable="false">'+spots+'</div></div>';
+    bindSpots(m);lastKey=view;
     return;
   }
-  if(view==='plan'){m.innerHTML=planHTML();m.querySelectorAll('[data-id]').forEach(function(b){b.onclick=function(){pickBeam(b.dataset.id)}});return}
-  if(view==='list'){
+  if(view==='plan'){m.innerHTML=planHTML()}
+  else{
     var h='<div class="list"><div class="grid">',cnt=0;
     BEAMS.forEach(function(b){
       if(!match(b))return;cnt++;
       var k=st(b.id),s=STATE[b.id]||{};
       h+='<button class="chip '+(k==='n'?'':k)+(picks[b.id]?' pick':'')+'" data-id="'+b.id+'"><b>'+b.id+'</b><small>'+b.t+' · '+b.l+' ม.</small><small>'+(s.p?'หล่อ '+fmt(s.p):s.w?'แผนหล่อ '+fmt(s.w):s.t?'ผูก '+fmt(s.t):'—')+'</small>'+(s.n?'<span class="note">'+esc(s.n)+'</span>':'')+'</button>';
     });
-    h+='</div>'+(cnt?'':'<div class="empty">ไม่มีคานตรงเงื่อนไข</div>')+'</div>';
-    m.innerHTML=h;
-    m.querySelectorAll('.chip').forEach(function(b){b.onclick=function(){pickBeam(b.dataset.id)}});
-    return;
+    m.innerHTML=h+'</div>'+(cnt?'':'<div class="empty">ไม่มีคานตรงเงื่อนไข</div>')+'</div>';
   }
-  var h='<div class="scroller"><div class="plan" style="width:'+(zoom*100)+'%"><img src="'+SECS[view].img+'" alt="แปลนคานหลังคา" draggable="false">';
-  BEAMS.forEach(function(b){
-    if(b.hot.p!==view)return;
-    h+=spot(b,b.hot);
-  });
-  h+='</div></div>';
-  m.innerHTML=h;
-  m.querySelectorAll('.hs').forEach(function(b){b.onclick=function(){pickBeam(b.dataset.id)}});
+  m.querySelectorAll('[data-id]').forEach(function(b){b.onclick=function(){pickBeam(b.dataset.id)}});
+  var nl=m.querySelector('.list');if(nl&&keep)nl.scrollTop=keep.t;
+  lastKey=view;
 }
+function refreshAll(){paintHeader();paintNav();paintTools();paintFilter();paintMain();paintPanel()}
 function dayLabel(d){var t=todayISO();if(d===t)return'วันนี้';if(d===tomorrowISO())return'พรุ่งนี้';if(d<t)return'เลยกำหนด';return''}
 function planHTML(){
   var g={},ready=[];
@@ -317,10 +324,10 @@ function paintPanel(){
     var d=function(){return document.getElementById('bd').value||todayISO()};
     document.getElementById('q0').onclick=function(){document.getElementById('bd').value=todayISO()};
     document.getElementById('q1').onclick=function(){document.getElementById('bd').value=tomorrowISO()};
-    document.getElementById('bt').onclick=function(){setField(ids,'t',true,d());picks={};render()};
-    document.getElementById('bw').onclick=function(){setField(ids,'w',true,d());picks={};render()};
-    document.getElementById('bp').onclick=function(){setField(ids,'p',true,d());picks={};render()};
-    document.getElementById('bc').onclick=function(){if(!confirm('ล้างสถานะผูกเหล็ก/แผนหล่อ/หล่อของ '+ids.length+' ตัว?'))return;setField(ids,'t',false);setField(ids,'w',false);setField(ids,'p',false);picks={};render()};
+    document.getElementById('bt').onclick=function(){setField(ids,'t',true,d());picks={};refreshAll()};
+    document.getElementById('bw').onclick=function(){setField(ids,'w',true,d());picks={};refreshAll()};
+    document.getElementById('bp').onclick=function(){setField(ids,'p',true,d());picks={};refreshAll()};
+    document.getElementById('bc').onclick=function(){if(!confirm('ล้างสถานะผูกเหล็ก/แผนหล่อ/หล่อของ '+ids.length+' ตัว?'))return;setField(ids,'t',false);setField(ids,'w',false);setField(ids,'p',false);picks={};refreshAll()};
     document.getElementById('bx').onclick=function(){picks={};paintMain();paintPanel()};
     return;
   }
