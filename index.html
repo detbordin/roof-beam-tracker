@@ -153,6 +153,7 @@ function todayISO(){return dayISO(0)}
 function tomorrowISO(){return dayISO(1)}
 var SIZE={PB5:[0.2,0.5],PB5C:[0.2,0.5]};
 function vol(b){var z=SIZE[b.t]||[0.2,0.4];return z[0]*z[1]*b.l}
+function dims(b){var z=SIZE[b.t]||[0.2,0.4];return z[0].toFixed(2)+'×'+z[1].toFixed(2)+'×'+b.l}
 var MN=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
 function fmt(iso){if(!iso)return'';var p=iso.split('-');return (+p[2])+' '+MN[+p[1]-1]+' '+String((+p[0]+543)%100)}
 function st(id){var s=STATE[id]||{};return s.i?'i':(s.p?'p':(s.w?'w':(s.t?'t':(s.u?'u':'n'))))}
@@ -222,11 +223,11 @@ var STY='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmln
 var SECN={A:'ช่วงที่ 1 (A–F)',B:'ช่วงที่ 2 (F–K)',C:'ช่วงที่ 3 (K–Q)'};
 function exportXLSX(){
   var H=function(a){return a.map(function(x){return cS(x,1)})};
-  var r1=[H(['เบอร์คาน','ชนิด','ยาว (ม.)','Top','ดีเทล','แผ่น','ช่วงแปลน','สถานะ','วันที่วางแผนผูกเหล็ก','วันที่ผูกเหล็ก','วันที่วางแผนหล่อ','วันที่หล่อ','วันที่ติดตั้ง','หมายเหตุ'])];
+  var r1=[H(['เบอร์คาน','ชนิด','ยาว (ม.)','Top','ดีเทล','แผ่น','ช่วงแปลน','สถานะ','วันที่วางแผนผูกเหล็ก','วันที่ผูกเหล็ก','วันที่วางแผนหล่อ','วันที่หล่อ','วันที่ติดตั้ง','ปริมาตรคอนกรีต (ลบ.ม.)','หมายเหตุ'])];
   BEAMS.forEach(function(b){
     var s=STATE[b.id]||{},k=st(b.id);
     var sty=k==='i'?8:k==='p'?4:k==='w'?6:k==='t'?5:k==='u'?7:0;
-    r1.push([cS(b.id),cS(b.t),cN(b.l,3),cS(b.top),cS(b.d||''),cS(b.s||''),cS(SECN[b.hot.p]),cS(lbl(k),sty),s.u?cD(s.u):null,s.t?cD(s.t):null,s.w?cD(s.w):null,s.p?cD(s.p):null,s.i?cD(s.i):null,cS(s.n||'')]);
+    r1.push([cS(b.id),cS(b.t),cN(b.l,3),cS(b.top),cS(b.d||''),cS(b.s||''),cS(SECN[b.hot.p]),cS(lbl(k),sty),s.u?cD(s.u):null,s.t?cD(s.t):null,s.w?cD(s.w):null,s.p?cD(s.p):null,s.i?cD(s.i):null,cN(Math.round(vol(b)*1000)/1000,3),cS(s.n||'')]);
   });
   var r2=[H(['ช่วงแปลน','ทั้งหมด (ตัว)','ผูกเหล็กแล้ว (รวมที่หล่อแล้ว)','วางแผนผูกเหล็ก (ยังไม่ผูก)','วางแผนหล่อ (ยังไม่หล่อ)','หล่อแล้ว (รวมที่ติดตั้ง)','ยังไม่ทำ','ติดตั้งแล้ว'])];
   var tot=[0,0,0,0,0,0,0];
@@ -257,7 +258,7 @@ function exportXLSX(){
     {name:'xl/workbook.xml',text:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="สถานะคาน" sheetId="1" r:id="rId1"/><sheet name="สรุป" sheetId="2" r:id="rId2"/></sheets></workbook>'},
     {name:'xl/_rels/workbook.xml.rels',text:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet2.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'},
     {name:'xl/styles.xml',text:STY},
-    {name:'xl/worksheets/sheet1.xml',text:sheetXML(r1,[11,8,10,10,9,9,16,16,20,15,18,13,14,40],'A1:N'+r1.length)},
+    {name:'xl/worksheets/sheet1.xml',text:sheetXML(r1,[11,8,10,10,9,9,16,16,20,15,18,13,14,18,40],'A1:O'+r1.length)},
     {name:'xl/worksheets/sheet2.xml',text:sheetXML(r2,[18,16,26,24,26,60,12,14],null)}
   ];
   dl('roof-beam-status-'+todayISO()+'.xlsx','',zipBlob(files));
@@ -341,9 +342,9 @@ function setField(ids,field,on,date){
 }
 function setNote(id,txt){var s=STATE[id]||(STATE[id]={});txt=txt.replace(/\s+$/,'');if(txt)s.n=txt;else delete s.n;clean(id);changed()}
 function counts(sec){
-  var n=0,t=0,p=0,w=0,u=0,i=0;
-  BEAMS.forEach(function(b){if(sec&&b.hot.p!==sec)return;n++;var s=STATE[b.id]||{};if(s.i)i++;if(s.p||s.i)p++;else{if(s.t)t++;else if(s.u)u++;if(s.w)w++}});
-  return{n:n,t:t,p:p,w:w,u:u,i:i};
+  var n=0,t=0,p=0,w=0,u=0,i=0,wv=0,wl=0;
+  BEAMS.forEach(function(b){if(sec&&b.hot.p!==sec)return;n++;var s=STATE[b.id]||{};if(s.i)i++;if(s.p||s.i)p++;else{if(s.t)t++;else if(s.u)u++;if(s.w){w++;wv+=vol(b);wl+=b.l}}});
+  return{n:n,t:t,p:p,w:w,u:u,i:i,wv:wv,wl:wl};
 }
 function fActive(){return F.status!=='all'||F.type!=='all'||F.from||F.to||F.note}
 function match(b){
@@ -365,9 +366,9 @@ function paintHeader(){
   '<span class="pill"><i style="background:var(--tie)"></i>ผูกเหล็กแล้ว '+(c.t+c.p)+'</span>'+
   '<span class="pill"><i style="background:var(--pour)"></i>หล่อแล้ว '+c.p+'</span>'+
   '<span class="pill"><i style="background:#06b6d4"></i>ติดตั้งแล้ว '+c.i+'</span>'+
-  '<span class="pill"><i style="background:#8b5cf6"></i>วางแผนหล่อ '+c.w+'</span>'+
+  '<span class="pill"><i style="background:#8b5cf6"></i>วางแผนหล่อ '+c.w+' ตัว'+(c.w?' · '+c.wv.toFixed(2)+' ลบ.ม.':'')+'</span>'+
   '<span class="pill"><i style="background:#9db4e8"></i>ยังไม่ทำ '+(c.n-c.t-c.p)+'</span></div>'+
-  '<div class="bar"><b style="background:#06b6d4;width:'+(c.i/c.n*100)+'%"></b><b style="background:var(--pour);width:'+((c.p-c.i)/c.n*100)+'%"></b><b style="background:var(--tie);width:'+(c.t/c.n*100)+'%"></b></div><div class="ver">เวอร์ชัน 8 · มีสถานะติดตั้งแล้ว · หล่อแล้วรอติดตั้ง '+(c.p-c.i)+' ตัว</div>';
+  '<div class="bar"><b style="background:#06b6d4;width:'+(c.i/c.n*100)+'%"></b><b style="background:var(--pour);width:'+((c.p-c.i)/c.n*100)+'%"></b><b style="background:var(--tie);width:'+(c.t/c.n*100)+'%"></b></div><div class="ver">เวอร์ชัน 9 · คิดปริมาตรคอนกรีต · หล่อแล้วรอติดตั้ง '+(c.p-c.i)+' ตัว</div>';
 }
 function paintNav(){
   var nv=document.getElementById('nav');
@@ -418,8 +419,8 @@ function paintFilter(){
   var dc=dateChips();
   if(dc.length){h+='<div class="r"><span class="lb">วันที่มี</span>';dc.forEach(function(x){h+='<button class="c'+((F.from===x[0]&&F.to===x[0])?' on':'')+'" data-d="'+x[0]+'">'+fmt(x[0])+' ('+x[1]+')</button>'});h+='</div>'}
   h+='<div class="r"><label><input type="checkbox" id="fn"'+(F.note?' checked':'')+'> เฉพาะคานที่มีหมายเหตุ</label><span class="sp" style="flex:1"></span><button class="sm" data-clr>ล้างตัวกรอง</button></div>';
-  var n=0;BEAMS.forEach(function(b){if(match(b))n++});
-  h+='<div class="r"><span class="res">ตรงเงื่อนไข '+n+' ตัว</span></div></div>';
+  var n=0,fl=0,fv=0;BEAMS.forEach(function(b){if(match(b)){n++;fl+=b.l;fv+=vol(b)}});
+  h+='<div class="r"><span class="res">ตรงเงื่อนไข '+n+' ตัว · ยาวรวม '+fl.toFixed(2)+' ม. · คอนกรีต '+fv.toFixed(2)+' ลบ.ม.</span></div></div>';
   el.innerHTML=h;
   var re=function(){paintTools();paintFilter();paintMain()};
   el.querySelectorAll('[data-s]').forEach(function(b){b.onclick=function(){F.status=b.dataset.s;re()}});
@@ -477,11 +478,13 @@ function planHTML(){
   var ds=Object.keys(g).sort(),h='<div class="list">';
   h+='<div class="hint">วิธีวางแผน: ไปที่แท็บช่วงที่ 1–3 หรือรายการทั้งหมด → กด "เลือกหลายตัว" → แตะคานที่จะผูกเหล็กหรือจะหล่อ → เลือกวันที่ แล้วกด "วางแผนผูกเหล็ก" หรือ "วางแผนหล่อ"</div>';
   if(!ds.length)h+='<div class="empty">ยังไม่มีคานที่วางแผนหล่อ</div>';
+  else{var tw=0,tl=0,tv=0;BEAMS.forEach(function(b){var s=STATE[b.id]||{};if(s.w&&!s.p&&!s.i){tw++;tl+=b.l;tv+=vol(b)}});
+    h+='<div class="day" style="border:2px solid #8b5cf6;background:#f5f3ff"><h3>รวมคานวางแผนหล่อ (ยังไม่หล่อ)</h3><div class="sub" style="font-size:14px;color:var(--ink)">'+tw+' ตัว · ยาวรวม '+tl.toFixed(2)+' ม. · คอนกรีต <b>'+tv.toFixed(2)+' ลบ.ม.</b></div></div>'}
   ds.forEach(function(d){
     var arr=g[d],L=0,V=0,done=0;arr.forEach(function(b){L+=b.l;V+=vol(b);if((STATE[b.id]||{}).p)done++});
     var lb=dayLabel(d);
     h+='<div class="day"><h3>'+(lb?lb+' · ':'')+fmt(d)+'</h3><div class="sub">'+arr.length+' ตัว · ยาวรวม '+L.toFixed(2)+' ม. · คอนกรีตโดยประมาณ '+V.toFixed(2)+' ลบ.ม.'+(done?' · หล่อแล้ว '+done:'')+'</div><div class="bs">';
-    arr.forEach(function(b){h+='<button data-id="'+b.id+'" class="'+(st(b.id)==='i'?'i':st(b.id)==='p'?'p':'')+'">'+b.id+' <small>'+b.t+'</small></button>'});
+    arr.forEach(function(b){h+='<button data-id="'+b.id+'" class="'+(st(b.id)==='i'?'i':st(b.id)==='p'?'p':'')+'">'+b.id+' <small>'+b.t+' · '+b.l+' ม. · '+vol(b).toFixed(2)+' ลบ.ม.</small></button>'});
     h+='</div></div>';
   });
   var dus=Object.keys(gu).sort();
@@ -525,9 +528,9 @@ function afterEdit(){paintMain();paintHeader();paintNav();if(showF)paintFilter()
 function paintPanel(){
   var P=document.getElementById('panel');
   if(multi&&view!=='plan'){
-    var ids=Object.keys(picks);
+    var ids=Object.keys(picks);var bl=0,bv=0;ids.forEach(function(i){var q=BYID[i];if(q){bl+=q.l;bv+=vol(q)}});
     if(!ids.length){P.innerHTML='<div class="hint">โหมดเลือกหลายตัว: แตะคานที่ต้องการ แล้วกดบันทึกสถานะทีเดียว</div>';return}
-    P.innerHTML='<div class="bulk"><div class="b1">เลือกแล้ว '+ids.length+' ตัว: '+esc(ids.join(', '))+'</div>'+
+    P.innerHTML='<div class="bulk"><div class="b1">เลือกแล้ว '+ids.length+' ตัว · ยาวรวม '+bl.toFixed(2)+' ม. · คอนกรีต '+bv.toFixed(2)+' ลบ.ม.<br><span style="font-weight:400;font-size:13px">'+esc(ids.join(', '))+'</span></div>'+
     '<input type="date" id="bd" value="'+todayISO()+'"><button class="q" id="q0">วันนี้</button><button class="q" id="q1">พรุ่งนี้</button>'+
     '<button id="bu" style="background:#ec4899">วางแผนผูกเหล็ก</button><button id="bt" style="background:var(--tie)">ผูกเหล็กแล้ว</button><button id="bw" style="background:#8b5cf6">วางแผนหล่อ</button><button id="bp" style="background:var(--pour)">หล่อแล้ว</button><button id="bi" style="background:#06b6d4">ติดตั้งแล้ว</button>'+
     '<button id="bc" style="background:#e11d48">ล้างสถานะ</button><button id="bx" style="background:#6b7385">ยกเลิก</button></div>';
@@ -546,7 +549,7 @@ function paintPanel(){
   if(!sel){P.innerHTML='';return}
   var b=BYID[sel],s=STATE[sel]||{};
   P.innerHTML='<div class="sheet"><h2><span>คาน '+b.id+' · '+b.t+'</span><button class="x" id="cl">✕</button></h2>'+
-  '<div class="meta">ยาว '+b.l+' ม. · Top '+b.top+(b.d?' · ดีเทล '+b.d+' ('+b.s+')':'')+'</div>'+
+  '<div class="meta">ยาว '+b.l+' ม. · Top '+b.top+(b.d?' · ดีเทล '+b.d+' ('+b.s+')':'')+'<br>ปริมาตรคอนกรีต '+vol(b).toFixed(3)+' ลบ.ม. ('+dims(b)+' ม.)</div>'+
   '<div class="row u'+(s.u?' on':'')+'"><label><input type="checkbox" id="cu"'+(s.u?' checked':'')+'>วางแผนผูกเหล็ก</label><input type="date" id="du" value="'+(s.u||tomorrowISO())+'"></div>'+
   '<div class="row t'+(s.t?' on':'')+'"><label><input type="checkbox" id="ct"'+(s.t?' checked':'')+'>ผูกเหล็กแล้ว</label><input type="date" id="dt" value="'+(s.t||todayISO())+'"></div>'+
   '<div class="row w'+(s.w?' on':'')+'"><label><input type="checkbox" id="cw"'+(s.w?' checked':'')+'>วางแผนหล่อ</label><input type="date" id="dw" value="'+(s.w||tomorrowISO())+'"></div>'+
