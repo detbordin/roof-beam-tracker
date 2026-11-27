@@ -188,6 +188,17 @@ try{var raw=localStorage.getItem(LSK);if(raw){var o=JSON.parse(raw);if(o&&o.stat
   });
   try{localStorage.setItem(LSK,JSON.stringify({state:STATE}));localStorage.setItem(KEY,'1')}catch(e){}
 })();
+// ---------- one-time data update: beams already poured (purple C beams) ----------
+(function(){
+  var KEY='roofbeam-tracker-seed-20261127-C9';
+  try{if(localStorage.getItem(KEY))return}catch(e){}
+  'C9 C14 C20 C21 C29 C30 C34 C35 C40'.split(' ').forEach(function(id){
+    var s=STATE[id]||(STATE[id]={});
+    if(!s.p)s.p=s.i||'2026-11-27';
+    if(!s.t)s.t=s.p;
+  });
+  try{localStorage.setItem(LSK,JSON.stringify({state:STATE}));localStorage.setItem(KEY,'1')}catch(e){}
+})();
 function localSave(){try{localStorage.setItem(LSK,JSON.stringify({state:STATE}));saveMsg='บันทึกในเครื่องนี้แล้ว'}catch(e){saveMsg='บันทึกไม่ได้ (เบราว์เซอร์บล็อกที่เก็บข้อมูล)'}}
 function changed(){localSave();paintHeader()}
 function dl(name,mime,text){
@@ -394,7 +405,7 @@ function paintHeader(){
   '<span class="pill"><i style="background:#06b6d4"></i>ติดตั้งแล้ว '+c.i+'</span>'+
   '<span class="pill"><i style="background:#8b5cf6"></i>วางแผนหล่อ '+c.w+' ตัว'+(c.w?' · '+c.wv.toFixed(2)+' ลบ.ม.':'')+'</span>'+
   '<span class="pill"><i style="background:#9db4e8"></i>ยังไม่ทำ '+(c.n-c.t-c.p)+'</span></div>'+
-  '<div class="bar"><b style="background:#06b6d4;width:'+(c.i/c.n*100)+'%"></b><b style="background:var(--pour);width:'+((c.p-c.i)/c.n*100)+'%"></b><b style="background:var(--tie);width:'+(c.t/c.n*100)+'%"></b></div><div class="ver">เวอร์ชัน 12 · อัปเดตคาน A หล่อแล้วครบทุกตัว · หล่อแล้วรอติดตั้ง '+(c.p-c.i)+' ตัว</div>';
+  '<div class="bar"><b style="background:#06b6d4;width:'+(c.i/c.n*100)+'%"></b><b style="background:var(--pour);width:'+((c.p-c.i)/c.n*100)+'%"></b><b style="background:var(--tie);width:'+(c.t/c.n*100)+'%"></b></div><div class="ver">เวอร์ชัน 13 · อัปเดตคาน C สีม่วง 9 ตัวเป็นหล่อแล้ว · หล่อแล้วรอติดตั้ง '+(c.p-c.i)+' ตัว</div>';
 }
 function paintNav(){
   var nv=document.getElementById('nav');
