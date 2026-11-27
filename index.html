@@ -166,6 +166,17 @@ function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;
 
 // ---------- persistence (localStorage) ----------
 try{var raw=localStorage.getItem(LSK);if(raw){var o=JSON.parse(raw);if(o&&o.state)STATE=o.state}}catch(e){}
+// ---------- one-time data update: beams already poured (list of 27 พ.ย. 69) ----------
+(function(){
+  var KEY='roofbeam-tracker-seed-20261127';
+  try{if(localStorage.getItem(KEY))return}catch(e){}
+  'A9 A14 A19 A20 A35 A41 A42 A46 B1 B2 B3 B4 B5 B6 B7 B8 B9 B10 B11 B12 B13 B14 B15 B16 B17 B18 B19 B21 B22 B23 B24 B25 B26 B27 B28 B29 B30 B31 B32 B33 B34 B35 B36 B39 B40 B41 B42 B43 B44 B45 B46 B47 B48 B49 B50 B51 B52 B53 B54 B55 B56 C1 C2 C3 C4 C5 C6 C7 C8 C10 C11 C12 C13 C17 C18 C19 C22 C23 C24 C26 C28 C31 C32 C33 C35 C37 C38 C39 C42 C43 L1 L2 L3 L4'.split(' ').forEach(function(id){
+    var s=STATE[id]||(STATE[id]={});
+    if(!s.p)s.p=s.i||'2026-11-27';
+    if(!s.t)s.t=s.p;
+  });
+  try{localStorage.setItem(LSK,JSON.stringify({state:STATE}));localStorage.setItem(KEY,'1')}catch(e){}
+})();
 function localSave(){try{localStorage.setItem(LSK,JSON.stringify({state:STATE}));saveMsg='บันทึกในเครื่องนี้แล้ว'}catch(e){saveMsg='บันทึกไม่ได้ (เบราว์เซอร์บล็อกที่เก็บข้อมูล)'}}
 function changed(){localSave();paintHeader()}
 function dl(name,mime,text){
@@ -372,7 +383,7 @@ function paintHeader(){
   '<span class="pill"><i style="background:#06b6d4"></i>ติดตั้งแล้ว '+c.i+'</span>'+
   '<span class="pill"><i style="background:#8b5cf6"></i>วางแผนหล่อ '+c.w+' ตัว'+(c.w?' · '+c.wv.toFixed(2)+' ลบ.ม.':'')+'</span>'+
   '<span class="pill"><i style="background:#9db4e8"></i>ยังไม่ทำ '+(c.n-c.t-c.p)+'</span></div>'+
-  '<div class="bar"><b style="background:#06b6d4;width:'+(c.i/c.n*100)+'%"></b><b style="background:var(--pour);width:'+((c.p-c.i)/c.n*100)+'%"></b><b style="background:var(--tie);width:'+(c.t/c.n*100)+'%"></b></div><div class="ver">เวอร์ชัน 10 · เพิ่มคาน L1–L4 / C45–C50 · แสดงรหัสคาน · หล่อแล้วรอติดตั้ง '+(c.p-c.i)+' ตัว</div>';
+  '<div class="bar"><b style="background:#06b6d4;width:'+(c.i/c.n*100)+'%"></b><b style="background:var(--pour);width:'+((c.p-c.i)/c.n*100)+'%"></b><b style="background:var(--tie);width:'+(c.t/c.n*100)+'%"></b></div><div class="ver">เวอร์ชัน 11 · อัปเดตคานหล่อแล้ว 94 ตัว · หล่อแล้วรอติดตั้ง '+(c.p-c.i)+' ตัว</div>';
 }
 function paintNav(){
   var nv=document.getElementById('nav');
